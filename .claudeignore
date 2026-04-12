@@ -1,0 +1,5 @@
+# Graphify generated output (large JSON/HTML — use GRAPH_REPORT.md instead)
+graphify-out/*.html
+graphify-out/graph.json
+graphify-out/cypher.txt
+graphify-out/.graphify_*

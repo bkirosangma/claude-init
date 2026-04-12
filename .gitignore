@@ -1,0 +1,5 @@
+# Graphify generated output
+graphify-out/
+
+# Claude Code project settings
+.claude/

@@ -63,7 +63,16 @@ A portable setup package that gives any Claude Code installation the full compou
 | `SETUP.md` | Step-by-step installation guide (7 phases, from prerequisites to verification) |
 | `REASONING.md` | Design explanations for every component (the engineering "why" behind each decision) |
 | `README.md` | This file (the human "why" — purpose, approach, outcome) |
-| `skills/` | All 14 skill files, ready to copy to `~/.claude/skills/` |
+| `skills/` | 4 skills + 10 supporting scripts, ready to copy to `~/.claude/skills/` |
+
+**Skills:**
+
+| Skill | Trigger | What it does |
+|-------|---------|--------------|
+| **graphify** | `/graphify` | Turns any folder of files (code, docs, papers, images) into a navigable knowledge graph with community detection, an interactive HTML visualization, GraphRAG-ready JSON, and a plain-language `GRAPH_REPORT.md`. Supports incremental rebuilds, directed graphs, Neo4j export, Obsidian vaults, and an agent-crawlable wiki. |
+| **hybrid-search** | `/hybrid-search` | Fused search combining claude-mem's temporal memory (vector + keyword) with graphify's structural knowledge graph (BFS/DFS traversal), ranked by Reciprocal Rank Fusion. Also manages the 4-tier knowledge consolidation pipeline — contradiction detection, confidence decay scoring, crystallized knowledge pages, and procedural workflow extraction. Includes 8 supporting hooks and scripts that run automatically on file reads, writes, and session end. |
+| **compound-dispatch** | `/compound-dispatch` | Enriches subagent prompts with "Prior Knowledge" from all three memory systems before dispatching them. Queries graphify for structural relationships, claude-mem for past decisions and observations, and MEMORY.md for user preferences — so subagents start informed instead of blank. |
+| **init-project** | `/init-project` | One-command per-project setup. Verifies global prerequisites, installs graphify's Claude Code integration, writes an enhanced CLAUDE.md with all memory routing protocols, creates ignore files, starts the claude-mem worker, and optionally builds the initial knowledge graph. |
 
 **What it takes to set up:**
 
