@@ -127,6 +127,11 @@ This system is built on top of these tools:
 | **claude-mem** | thedotmack | [GitHub Marketplace](https://github.com/thedotmack/claude-mem) | Temporal intelligence — persistent cross-session observation memory with FTS5 search |
 | **superpowers** | claude-plugins-official | [Claude Plugins](https://github.com/claude-plugins-official/superpowers) | Workflow intelligence — structured skills for brainstorming, TDD, debugging, planning, and code review |
 
+### Inspiration
+
+- [Andrej Karpathy's CLAUDE.md](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+- [Rohit Ghumare's Claude Code Best Practices](https://gist.github.com/rohitg00/2067ab416f7bbe447c1977edaaa681e2)
+
 ---
 
 **Detailed setup instructions:** [SETUP.md](SETUP.md)
