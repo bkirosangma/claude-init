@@ -402,18 +402,137 @@ For each new project, run inside the project directory:
 /init-project
 ```
 
-This verifies prerequisites, writes enhanced CLAUDE.md, and optionally builds the graph.
+This verifies prerequisites, configures ignore files (`.gitignore`, `.claudeignore`, `.graphifyignore`), writes enhanced CLAUDE.md with all three memory systems, starts the claude-mem worker, and optionally builds the initial knowledge graph.
 
 ### 6.2 Or manual setup
 
+#### 6.2.1 Configure ignore files
+
+Set up ignore files **before** building the graph so generated artifacts and noise are excluded from the start.
+
+**`.gitignore`** — add if not already present:
+```
+# Graphify generated output
+graphify-out/
+
+# Claude Code project settings
+.claude/
+```
+
+**`.claudeignore`** — add if not already present:
+```
+# Graphify generated output (large JSON/HTML — use GRAPH_REPORT.md instead)
+graphify-out/*.html
+graphify-out/graph.json
+graphify-out/cypher.txt
+graphify-out/.graphify_*
+```
+
+**`.graphifyignore`** — controls what enters the knowledge graph. Graphify already skips common noise dirs (`node_modules`, `dist`, `build`, `target`, `__pycache__`, `.venv`, etc.) by default. Add project-specific patterns based on your stack:
+
+Common patterns (all projects):
+```
+# Test fixtures and snapshots
+**/__snapshots__/
+**/fixtures/
+**/testdata/
+
+# Large data files
+*.csv
+*.parquet
+*.sqlite
+
+# IDE settings
+.idea/
+.vscode/
+*.iml
+```
+
+JavaScript/TypeScript projects (if `package.json` exists):
+```
+*.min.js
+*.min.css
+*.generated.*
+package-lock.json
+yarn.lock
+bun.lock
+pnpm-lock.yaml
+```
+
+Java / Spring Boot projects (if `pom.xml` or `build.gradle` exists):
+```
+# Compiled output (target/ and build/ already skipped by graphify default)
+*.jar
+*.war
+*.ear
+*.class
+
+# Gradle
+.gradle/
+gradle/wrapper/
+
+# Maven wrapper
+.mvn/wrapper/
+
+# Spring Boot
+*.log
+logs/
+
+# Test reports (generated, no structural value)
+**/surefire-reports/
+**/failsafe-reports/
+**/test-results/
+```
+
+DevOps / Infrastructure projects (if `*.tf`, `Dockerfile`, `docker-compose.*`, `ansible.cfg`, `helmfile.*`, or `kubernetes/` exists):
+```
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
+.terraform.lock.hcl
+
+# Ansible
+*.retry
+
+# Helm
+**/charts/*.tgz
+
+# Kubernetes generated manifests
+**/rendered/
+**/generated-manifests/
+
+# CI/CD artifacts
+.github/actions/*/dist/
+
+# Vault / secrets (should never enter graph)
+**/vault-secrets/
+*.enc
+*.sealed
+```
+
+Python projects (if `pyproject.toml`, `setup.py`, or `requirements.txt` exists):
+```
+poetry.lock
+Pipfile.lock
+*.pyc
+*.pyo
+```
+
+Only include patterns relevant to the project. Multi-stack projects (e.g., Spring Boot backend + React frontend) should include both sets.
+
+#### 6.2.2 Build knowledge graph
+
 ```bash
-# Build knowledge graph
 cd /path/to/project
 graphify .    # or use /graphify . inside Claude Code
 
 # Verify graph exists
 ls graphify-out/graph.json graphify-out/GRAPH_REPORT.md
 ```
+
+#### 6.2.3 Write project CLAUDE.md
 
 Add to project CLAUDE.md (create if needed):
 ```markdown
@@ -460,6 +579,7 @@ sleep 3 && cat /tmp/.graphify-rebuild.log
 - [ ] **Context test**: `python3 ~/.claude/skills/compound-dispatch/gather-context.py some_file.ts` outputs "Prior Knowledge" sections
 - [ ] **Rebuild test**: auto-rebuild-graph.sh creates `/tmp/.graphify-rebuild.log` with node/edge counts
 - [ ] **Rate limit test**: second trigger within 30s produces no rebuild
+- [ ] **Ignore files**: Project has `.gitignore` (with `graphify-out/`, `.claude/`), `.claudeignore` (with large graphify artifacts), `.graphifyignore` (with project-appropriate patterns)
 - [ ] **Live session**: Start Claude Code → Read a file → see "GRAPH CONTEXT for..." injected
 - [ ] **Session end**: End a session → `ls ~/.claude-mem/crystallized/` shows knowledge pages
 - [ ] **Superpowers**: Start a session → superpowers skills are listed → compound-dispatch enrichment works
