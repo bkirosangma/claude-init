@@ -6,43 +6,15 @@ A portable setup package that gives Claude Code persistent memory across session
 
 ## Setup
 
-### Prerequisites
-
-| Tool | Install | Purpose |
-|------|---------|---------|
-| Claude Code CLI | [claude.ai/download](https://claude.ai/download) | The AI coding assistant |
-| Node.js 22+ | `nvm install 22` | Required by claude-mem |
-| Bun | `curl -fsSL https://bun.sh/install \| bash` | Required by claude-mem worker |
-| Python 3.12+ | System or `pyenv install 3.12` | Required by graphify |
-| pipx | `python3 -m pip install pipx && pipx ensurepath` | Isolated Python tool installs |
-| graphify | `pipx install graphifyy` | Knowledge graph generation |
-
-### Install Plugins
-
-```bash
-claude plugins add claude-mem@thedotmack        # temporal memory
-claude plugins add superpowers@claude-plugins-official  # workflow skills
-```
-
-### Install Skills
-
-```bash
-cp -r skills/* ~/.claude/skills/
-chmod +x ~/.claude/skills/hybrid-search/*.sh
-chmod +x ~/.claude/skills/compound-dispatch/gather-context.py
-```
-
-### Initialize a Project
-
-Open Claude Code in any project and run:
+Paste this into Claude Code and it will handle everything:
 
 ```
-/init-project
+Set up compound intelligence using https://github.com/bkirosangma/claude-init — follow the SETUP.md instructions
 ```
 
-This verifies prerequisites, installs hooks, writes the CLAUDE.md protocols, creates ignore files, and starts the claude-mem worker. Run it once per project.
+Claude will read the repo, install the prerequisites, copy the skills, configure the hooks, and initialize your project.
 
-Full step-by-step instructions in [SETUP.md](SETUP.md).
+For manual setup or troubleshooting, see [SETUP.md](SETUP.md).
 
 ---
 
