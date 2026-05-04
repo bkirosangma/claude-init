@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="200" viewBox="0 0 600 200" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="600" height="200" fill="#ffffff"/>
+  <!-- kb-meta: type=jianpu args={'type': 'jianpu', 'width': 600, 'height': 200, 'theme': 'light', 'title': '', 'play': False, 'clef': 'treble', 'key': '1=C', 'time_sig': '4/4', 'notes': '1 2 3 4 5 6 7 1', 'strings': 6, 'tuning': 'EADGBE', 'highlight': '', 'jazz_extensions': False, 'quartertones': False, 'raga': '', 'shrutis': 12, 'show_vadi': False, 'jins': '', 'root': 'D', 'show_cents': False, 'pattern': '', 'instrument': 'guitar', 'chord': '', 'fingering': '', 'mode': 'I', 'lyric': '', 'neumes': '', 'scale': '', 'steps': 16, 'tracks': '', 'tala': '', 'style': '', 'strum': False, 'arpeggiate': False} -->
+  <text x="50" y="50" text-anchor="start" fill="#1f2937" font-size="13" font-weight="600">1=C</text>
+  <text x="110" y="50" text-anchor="start" fill="#6b7280" font-size="12" font-weight="400">4/4</text>
+  <text x="81" y="108" text-anchor="middle" fill="#3b82f6" font-size="24" font-weight="700">1</text>
+  <text x="143" y="108" text-anchor="middle" fill="#3b82f6" font-size="24" font-weight="700">2</text>
+  <text x="205" y="108" text-anchor="middle" fill="#3b82f6" font-size="24" font-weight="700">3</text>
+  <text x="267" y="108" text-anchor="middle" fill="#3b82f6" font-size="24" font-weight="700">4</text>
+  <text x="329" y="108" text-anchor="middle" fill="#3b82f6" font-size="24" font-weight="700">5</text>
+  <text x="391" y="108" text-anchor="middle" fill="#3b82f6" font-size="24" font-weight="700">6</text>
+  <text x="453" y="108" text-anchor="middle" fill="#3b82f6" font-size="24" font-weight="700">7</text>
+  <text x="515" y="108" text-anchor="middle" fill="#3b82f6" font-size="24" font-weight="700">1</text>
+</svg>

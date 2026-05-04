@@ -1,0 +1,362 @@
+# Command: diagram
+
+Generate a diagram JSON file for any topic. Uses the archetype system to select visual conventions appropriate to the domain.
+
+## Usage
+
+```
+/knowledge-base diagram <topic>
+```
+
+The `<topic>` is a free-form string describing what to diagram (e.g., "Kubernetes pod lifecycle", "TCP handshake", "photosynthesis process", "OAuth2 authorization code flow").
+
+## Inputs
+
+- **topic** (string, required): The subject of the diagram, passed from the SKILL.md dispatcher.
+- **vault root** (string | null): The vault root path if vault detection succeeded, or null.
+- **vault config** (object | null): Parsed `.archdesigner/config.json` if in a vault.
+- **gathered context** (object): The compound intelligence context assembled by SKILL.md before dispatching.
+
+## Step 1: Detect Vault and Gather Context
+
+Vault detection is handled by SKILL.md before this command runs. Use the passed-in vault root and gathered context. Additionally, load vault-specific memory files:
+
+### 1a. Archetype Preferences
+
+If a vault is detected, check for `<vault-root>/memory/archetype-preferences.md`. If it exists, read it. This file contains learned icon mappings, color choices, and layout preferences from prior diagram sessions and user corrections. These preferences override archetype defaults when they conflict.
+
+If the file does not exist, that is fine -- it will be created in Step 4.
+
+### 1b. Topic Registry
+
+If a vault is detected, check for `<vault-root>/memory/topic-registry.md`. If it exists, read it. This file lists all previously generated topics with their slugs, archetypes, and creation dates. Use this to:
+- Avoid duplicate slugs (append `-2`, `-3`, etc. if the slug already exists)
+- Detect related topics the user has diagrammed before (mention them if relevant)
+
+### 1c. Additional Intelligence Queries
+
+Beyond the context SKILL.md already gathered:
+- Query graphify for the topic if a vault graph exists: look for related nodes, communities, and structural patterns that could inform the diagram layout.
+- Query claude-mem for past diagram sessions: search for observations about prior diagrams, user corrections to layouts or icon choices, and archetype adaptations. Use MCP tool `mcp__plugin_claude-mem_mcp-search__search` with `query: "diagram <topic>"`.
+
+## Step 2: Select Archetype
+
+### 2a. Select Archetype via Script
+
+Run the archetype selection script with `--output-type diagram` so meta-archetypes route to their `diagram.md` sub-archetype:
+
+```bash
+ARCHETYPE_RESULT=$(python3 ~/.claude/skills/knowledge-base/scripts/kb_archetype.py \
+  --archetypes-dir ~/.claude/skills/knowledge-base/archetypes \
+  --topic "<topic>" \
+  --output-type diagram)
+```
+
+Parse the 3-token output: `<name> <subtype> <path>`.
+- `subtype` = `-` indicates a single-file archetype (e.g., `software-architecture`); use the `<path>` directly.
+- `subtype` = `diagram` indicates a meta-archetype's diagram sub-archetype (e.g., `music`); the `<path>` points to the sub-archetype file.
+- Output `no-match`: adapt on the fly using `_archetype-template.md` (see 2c below).
+
+Read the archetype file at `<path>` for all conventions (layers, icons, connections, layout, flows). For meta sub-archetypes, also read `<meta-root>/manifest.json` for context (e.g., tradition badges, purpose-keywords).
+
+### 2c. On-the-Fly Adaptation
+
+When no archetype matches, create ad-hoc conventions using `_archetype-template.md` as the structural guide:
+
+1. **Layer categories**: Invent 3-6 layer categories appropriate to the topic's domain. Each layer needs a purpose, background color (`#hex6`), and border color (`#hex6`). Use soft pastel backgrounds with matching stronger borders (follow the color pattern from the software-architecture archetype).
+
+2. **Icon mappings**: Map the topic's concepts to Lucide icons from the available set listed in the archetype template. Choose icons by visual metaphor:
+   - People/roles: `User`, `Users`
+   - Data/storage: `Database`, `HardDrive`, `Archive`, `Folder`
+   - Processing/compute: `Cpu`, `Cog`, `ServerCog`
+   - Communication: `Mail`, `Bell`, `Radio`, `Wifi`
+   - Security: `Shield`, `ShieldCheck`, `Lock`, `Key`, `Fingerprint`
+   - Monitoring: `Activity`, `BarChart`, `Monitor`
+   - External/cloud: `Cloud`, `CloudCog`, `Globe`
+   - Code/config: `Code`, `FileCode`, `Terminal`, `GitBranch`
+   - Networking: `Network`, `Router`, `Cable`, `Plug`
+   - Generic containers: `Box`, `Container`, `Layers`, `Server`
+
+3. **Connection colors**: Assign 3-6 distinct colors for different flow types in the diagram. Use the software-architecture connection palette as a starting point and adapt:
+   - Primary flow: `#3b82f6` (blue)
+   - Secondary/alternate: `#10b981` (green)
+   - Decision/branch: `#f59e0b` (amber)
+   - Data/resource: `#64748b` (slate)
+   - Internal/logic: `#8b5cf6` (purple)
+   - Error/exception: `#ef4444` (red)
+
+4. **Layout preferences**: Apply universal spacing rules from the software-architecture archetype (these are app constants and apply to ALL diagrams regardless of domain). Choose flow direction based on topic nature:
+   - Processes, pipelines, hierarchies: top-to-bottom
+   - Timelines, sequences, workflows: left-to-right
+   - Ecosystems, networks: radial (approximate with centered layout)
+
+5. **Check archetype preferences**: If `archetype-preferences.md` was loaded in Step 1a, apply any learned preferences that are relevant (e.g., the user previously chose `Cpu` for "processor" in a hardware diagram -- reuse that mapping).
+
+## Step 3: Generate the Diagram
+
+Follow the design process defined in the selected archetype (or the adapted conventions from 2c). The software-architecture archetype's Design Process section is the canonical reference -- adapt it to the domain.
+
+### 3a. Design Process
+
+Execute these steps in order:
+
+1. **Identify layers**: Group the topic's concepts by category/concern. Each group becomes a layer. Assign layer colors from the archetype or adaptation.
+
+2. **List all nodes**: For each layer, enumerate the specific components/concepts. Assign each:
+   - `id`: `el-<short-descriptive-id>` (e.g., `el-browser`, `el-auth-svc`, `el-ribosomes`)
+   - `label`: Human-readable name
+   - `sub`: Optional subtitle or brief description
+   - `icon`: From the archetype icon mappings or adapted mappings
+   - `w`: Width in px (default 210, range 110-230)
+   - `layer`: The layer ID this node belongs to
+
+3. **Map connections**: Identify all relationships between nodes. Assign each:
+   - `id`: `dl-<short-descriptive-id>`
+   - `from` / `to`: Node IDs
+   - `fromAnchor` / `toAnchor`: Anchor points (see Anchor Points in software-architecture archetype)
+   - `color`: From the connection semantics
+   - `label`: What flows along this connection
+   - `labelPosition`: Adjusted per the Label Positioning table (do NOT leave all at 0.5)
+
+4. **Establish center axis**: Set x ~ 750. Design symmetric pairs and triads around this axis.
+
+5. **Compute coordinates**: Start from y = 100. Apply spacing rules:
+   - Same-row horizontal gap: 70px+ between node edges
+   - Cross-layer vertical gap: 120-160px between node edges across adjacent layers
+   - Layer boundary gap: 50-80px between layer boundaries
+   - Within-layer padding: 25px inside layers around nodes
+   - Layer title offset: 20px extra at top of each layer
+
+6. **Verify all gaps**: Check every node-to-node and layer-to-layer gap meets minimums. Fix any violations before proceeding.
+
+7. **Position condition nodes** (if any): Place between layers with sufficient gap. Condition nodes have `"shape": "condition"` and NO `layer` property. Verify no layer collisions using the formula from the archetype.
+
+8. **Adjust label positions**: Set `labelPosition` per scenario to prevent overlaps (condition outputs: 0.70, fan-outs: 0.60, long diagonals: 0.20-0.30, etc.).
+
+9. **Assign colors**: Ensure each flow type uses a distinct color for visual tracing.
+
+10. **Define flows**: Trace all meaningful end-to-end paths. Each flow:
+    - Has an `id`: `flow-<descriptive-id>`
+    - Has a `name`: Human-readable description of the path
+    - Has `connectionIds`: Array of connection IDs forming a contiguous graph, listed in traversal order
+    - Verify the contiguity constraint: each connection shares at least one node with another connection in the same flow
+    - Draft a brief **flow explanation** (3–5 sentences) covering: what triggers this flow, the key steps across nodes, and the outcome. Store this text for Step 3e.
+
+### 3b. JSON Output
+
+Produce the diagram as a JSON file conforming to the schema defined in the software-architecture archetype:
+
+```json
+{
+  "title": "<Diagram Title>",
+  "layers": [LayerDef],
+  "nodes": [SerializedNodeData],
+  "connections": [Connection],
+  "layerManualSizes": {},
+  "lineCurve": "bezier",
+  "flows": [FlowDef],
+  "documents": [DocumentMeta]
+}
+```
+
+`DocumentMeta` shape (one entry per companion document created in Step 3e):
+
+```json
+{
+  "id": "<uuid-or-slug>",
+  "filename": "<vault-relative-path-to-.md>",
+  "title": "<flow name> — Explanation",
+  "attachedTo": [{ "type": "flow", "id": "<flow-id>" }]
+}
+```
+
+The `documents` array tells the app which documents are pre-attached to which flows. When the user opens the diagram, attachments are restored automatically. **Only include entries for documents that were actually written to disk in Step 3e.**
+
+See the software-architecture archetype for the full schema of LayerDef, SerializedNodeData, Connection, and FlowDef.
+
+### 3e. Flow Explanation Documents
+
+For each flow defined in Step 3a, write a companion Markdown document that explains the flow in prose:
+
+1. **Filename**: `<flow-descriptive-id>.md` (e.g. `flow-authorization-code.md`). Place inside a `flow-descriptions/` subfolder: `<topicFolder>/flow-descriptions/<flow-descriptive-id>.md`. Create the subfolder first: `mkdir -p "<topicFolder>/flow-descriptions/"`.
+
+2. **Generate the tables via script** — after the diagram JSON has been written to disk, run for each flow:
+
+```bash
+TABLES=$(python3 ~/.claude/skills/knowledge-base/scripts/kb_flow_tables.py \
+  --diagram "<topic-folder>/<topic-slug>.json" \
+  --flow "<flow-id>")
+```
+
+3. **Content template** — write only the prose paragraph; insert script output for the tables:
+
+```markdown
+# <Flow Name>
+
+<The 3–5 sentence explanation drafted in Step 3a: trigger, key steps, outcome.>
+
+<TABLES — paste kb_flow_tables.py output here verbatim>
+
+## Further Reading
+
+For full context, see [[<topic-slug>.md]].
+```
+
+4. **Register in `documents[]`**: After writing each file, add a `DocumentMeta` entry to the `documents` array in the diagram JSON:
+
+```json
+{
+  "id": "<topic-slug>-<flow-descriptive-id>",
+  "filename": "<collection-path>/<topic-slug>/flow-descriptions/<flow-descriptive-id>.md",
+  "title": "<Flow Name> — Explanation",
+  "attachedTo": [{ "type": "flow", "id": "<flow-id>" }]
+}
+```
+
+If a diagram has no flows, skip this step (the `documents` key may be omitted from the JSON).
+
+### 3c. Output Location
+
+Use the `topicFolder` confirmed in the placement step (Step 1d below). Write the JSON to `<topicFolder>/<topic-slug>.json`. Flow explanation documents go into `<topicFolder>/flow-descriptions/`.
+
+Create folders with `mkdir -p` before writing.
+
+### 3d. Topic Slug
+
+Run the slug script — do not compute this manually:
+
+```bash
+SLUG=$(python3 ~/.claude/skills/knowledge-base/scripts/kb_utils.py slug "<topic>")
+```
+
+If a vault is detected and a registry exists, check for duplicates:
+
+```bash
+SLUG=$(python3 ~/.claude/skills/knowledge-base/scripts/kb_utils.py next-slug "$SLUG" "<vault-root>/memory/topic-registry.md")
+```
+
+### 1d. Suggest Placement
+
+After deriving the slug, if `vaultRoot` is set:
+
+1. **Run the placement script**:
+
+```bash
+PLACEMENT=$(python3 ~/.claude/skills/knowledge-base/scripts/kb_suggest_placement.py \
+  --topic "<topic-slug>" \
+  --vault-root "<vault-root>")
+```
+
+2. **Merge with graphify context**: From `gatheredContext`, identify the collection paths of the most semantically related existing topics.
+
+3. **Present to the user** — ask which collection this diagram belongs in. Offer up to 4 options from the script's `suggestions[]` (using `display` and `reason` fields), plus "Vault root" and "Other (type path)".
+
+4. **Apply the confirmed path**: `topicFolder = "<vault-root>/<confirmed-path>/<topic-slug>/"`. If user picks "Vault root", use `<vault-root>/<topic-slug>/`. Custom paths (e.g. `react-next/nextjs-app-router/`) are supported.
+
+5. **If no vault detected**: skip and use `topicFolder = <cwd>/<topic-slug>/`.
+
+## Step 4: Update Vault State
+
+Skip this entire step if no vault was detected.
+
+### 4a. Update graphify
+
+If graphify is available in the vault, run an incremental rebuild to index the new diagram:
+
+```bash
+cd <vault-root> && graphify . --update
+```
+
+If graphify is not installed or the command fails, skip silently -- this is a best-effort enhancement.
+
+### 4b. Update Topic Registry
+
+Run the registry script — do not append manually:
+
+```bash
+python3 ~/.claude/skills/knowledge-base/scripts/kb_utils.py append-registry \
+  --vault-root "<vault-root>" \
+  --date "<YYYY-MM-DD>" \
+  --topic "<topic>" \
+  --slug "$SLUG" \
+  --diagram "<topic-slug>/<topic-slug>.json"
+```
+
+### 4c. Auto-Learn Archetype Preferences
+
+Save any new or adapted conventions to `<vault-root>/memory/archetype-preferences.md`. Create the file (and `memory/` directory) if they don't exist.
+
+**What to save:**
+
+1. **Icon mappings used**: If the archetype was adapted on the fly (no match), save all icon choices so future diagrams in this domain reuse them.
+2. **Color choices**: Save any custom layer colors or connection colors that were invented for a new domain.
+3. **Layout decisions**: If a non-default flow direction was chosen, record it with the domain context.
+4. **User corrections**: If during the session the user asks to change an icon, color, label, or layout choice, save the correction as a learned preference.
+
+**Format of archetype-preferences.md:**
+
+```markdown
+# Archetype Preferences
+
+Learned preferences from past diagram sessions. These override archetype defaults.
+
+## Icon Overrides
+
+| Domain | Concept | Icon | Learned From |
+|--------|---------|------|-------------|
+| <domain> | <concept> | <icon> | <topic> (<date>) |
+
+## Color Preferences
+
+| Domain | Flow Type | Color | Learned From |
+|--------|-----------|-------|-------------|
+| <domain> | <flow-type> | <color> | <topic> (<date>) |
+
+## Layout Preferences
+
+| Domain | Setting | Value | Learned From |
+|--------|---------|-------|-------------|
+| <domain> | <setting> | <value> | <topic> (<date>) |
+```
+
+If the file already exists, merge new entries into the existing tables. Do not duplicate entries -- if an identical mapping already exists, skip it.
+
+### 4d. Auto-Learn from User Corrections
+
+If the user requests changes to the generated diagram during the session (e.g., "change the database icon to HardDrive", "make the auth connections red instead of green", "move the API gateway to the left"), apply the change to the JSON file AND save the preference to `archetype-preferences.md` so future diagrams benefit from the correction.
+
+When saving a correction, record:
+- The original choice and the user's preferred choice
+- The domain context so it applies to similar future topics
+- The date for freshness tracking
+
+## Step 5: Verification
+
+After writing the JSON file, present the user with a verification checklist and tell them to load the diagram in the knowledge-base app:
+
+```
+Diagram generated: <filename>.json
+Location: <full-path>
+
+Please open this file in the knowledge-base app and verify:
+
+1. All layers render with correct colors and titles
+2. All nodes are positioned within their layers without overlap
+3. All connections route cleanly between nodes
+4. Labels are readable and don't overlap other elements
+5. All flows are listed in the Architecture Properties panel
+6. Selecting a flow correctly highlights the intended path
+7. Each flow shows its companion explanation document in the Documents section
+   of the Flow Properties panel (pre-attached — no manual linking needed)
+
+If anything needs adjustment, describe the change and I'll update
+the diagram and save the preference for future use.
+```
+
+If in a vault, also mention:
+```
+Vault updated:
+- Topic registered in memory/topic-registry.md
+- Preferences saved to memory/archetype-preferences.md
+- graphify index updated (if available)
+```

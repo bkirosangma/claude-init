@@ -1,0 +1,35 @@
+{
+  "name": "music",
+  "description": "Globally-inclusive music archetype family — diagrams, documents, SVGs, and tabs across Western, Indian, Arabic, Gamelan, East Asian, and other traditions",
+  "domain-indicators": [
+    "music", "song", "scale", "chord", "raga", "maqam", "tala",
+    "harmony", "melody", "rhythm", "composer", "instrument",
+    "mode", "key", "tonality", "tradition", "ensemble", "tab",
+    "fretboard", "staff", "notation", "circle of fifths",
+    "improvisation", "fingerpicking", "riff", "tablature",
+    "cadence", "progression", "voicing", "polyrhythm"
+  ],
+  "sub-archetypes": {
+    "diagram": "diagram.md",
+    "tabs":    "tabs.md",
+    "svg":     "svg.md",
+    "document": {
+      "default":            "documents/theory-primer.md",
+      "theory-primer":      "documents/theory-primer.md",
+      "biography":          "documents/biography.md",
+      "song-breakdown":     "documents/song-breakdown.md",
+      "instrument-profile": "documents/instrument-profile.md",
+      "tradition-overview": "documents/tradition-overview.md",
+      "history-timeline":   "documents/history-timeline.md",
+      "comparative":        "documents/comparative.md"
+    }
+  },
+  "purpose-keywords": {
+    "biography":          ["biography", "life of", "profile of"],
+    "history-timeline":   ["history of", "evolution of", "timeline"],
+    "song-breakdown":     ["analysis of", "breakdown", "anatomy of"],
+    "instrument-profile": ["the sitar", "the piano", "the guitar", "the violin", "the oud", "instrument:"],
+    "tradition-overview": ["carnatic music", "hindustani music", "gamelan music", "jazz tradition"],
+    "comparative":        [" vs ", " compared to ", "across traditions"]
+  }
+}

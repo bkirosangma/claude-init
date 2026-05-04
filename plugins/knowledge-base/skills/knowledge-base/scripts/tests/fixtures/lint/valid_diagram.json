@@ -1,0 +1,14 @@
+{
+  "title": "Raga Yaman Structure",
+  "layers": [
+    {"id": "layer-pitch", "label": "Pitch Classes", "color": "#dbeafe"}
+  ],
+  "nodes": [
+    {"id": "el-sa", "label": "Sa", "layer": "layer-pitch", "x": 100, "y": 100},
+    {"id": "el-re", "label": "Re", "layer": "layer-pitch", "x": 200, "y": 100}
+  ],
+  "connections": [
+    {"id": "dl-sa-re", "from": "el-sa", "to": "el-re", "color": "#3b82f6"}
+  ],
+  "flows": []
+}

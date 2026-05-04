@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="500" height="500" fill="#ffffff"/>
+  <!-- kb-meta: type=tala args={'type': 'tala', 'width': 500, 'height': 500, 'theme': 'light', 'title': '', 'tradition': 'hindustani', 'play': False, 'clef': 'treble', 'key': 'C major', 'time_sig': '4/4', 'notes': '', 'strings': 6, 'tuning': 'EADGBE', 'highlight': '', 'jazz_extensions': False, 'quartertones': False, 'raga': '', 'shrutis': 12, 'show_vadi': False, 'jins': '', 'root': 'D', 'show_cents': False, 'pattern': '', 'instrument': 'guitar', 'chord': '', 'fingering': '', 'mode': 'I', 'lyric': '', 'neumes': '', 'scale': '', 'steps': 16, 'tracks': '', 'tala': 'teentaal', 'style': '', 'strum': False, 'arpeggiate': False} -->
+  <circle cx="250" cy="250" r="190" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+  <line x1="250" y1="250" x2="250.0" y2="60.0" stroke="#64748b" stroke-width="1.5"/>
+  <line x1="250" y1="250" x2="440.0" y2="250.0" stroke="#64748b" stroke-width="1.5"/>
+  <line x1="250" y1="250" x2="250.0" y2="440.0" stroke="#64748b" stroke-width="1.5"/>
+  <line x1="250" y1="250" x2="60.0" y2="250.00000000000003" stroke="#64748b" stroke-width="1.5"/>
+  <circle cx="250.0" cy="60.0" r="10" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+  <text x="250.0" y="64.0" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="700">X</text>
+  <circle cx="322.70985214936707" cy="74.46288882285552" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="322.70985214936707" y="62.46288882285552" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">2</text>
+  <circle cx="384.35028842544403" cy="115.649711574556" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="384.35028842544403" y="103.649711574556" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">3</text>
+  <circle cx="425.5371111771445" cy="177.29014785063293" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="425.5371111771445" y="165.29014785063293" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">4</text>
+  <circle cx="440.0" cy="250.0" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="440.0" y="238.0" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">5</text>
+  <circle cx="425.5371111771445" cy="322.70985214936707" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="425.5371111771445" y="310.70985214936707" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">6</text>
+  <circle cx="384.35028842544403" cy="384.350288425444" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="384.35028842544403" y="372.350288425444" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">7</text>
+  <circle cx="322.70985214936707" cy="425.5371111771445" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="322.70985214936707" y="413.5371111771445" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">8</text>
+  <circle cx="250.0" cy="440.0" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="250.0" y="428.0" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">9</text>
+  <circle cx="177.29014785063293" cy="425.5371111771445" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="177.29014785063293" y="413.5371111771445" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">10</text>
+  <circle cx="115.649711574556" cy="384.35028842544403" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="115.649711574556" y="372.35028842544403" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">11</text>
+  <circle cx="74.46288882285558" cy="322.7098521493672" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="74.46288882285558" y="310.7098521493672" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">12</text>
+  <circle cx="60.0" cy="250.00000000000003" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="60.0" y="238.00000000000003" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">13</text>
+  <circle cx="74.46288882285555" cy="177.29014785063288" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="74.46288882285555" y="165.29014785063288" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">14</text>
+  <circle cx="115.64971157455594" cy="115.649711574556" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="115.64971157455594" y="103.649711574556" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">15</text>
+  <circle cx="177.29014785063282" cy="74.46288882285558" r="6" fill="#1f2937" stroke="none" stroke-width="1"/>
+  <text x="177.29014785063282" y="62.462888822855575" text-anchor="middle" fill="#6b7280" font-size="9" font-weight="400">16</text>
+  <text x="250" y="255" text-anchor="middle" fill="#1f2937" font-size="16" font-weight="700">Teentaal</text>
+</svg>

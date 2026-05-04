@@ -1,0 +1,8 @@
+{
+  "name": "hybrid-search",
+  "description": "Fused search across claude-mem (temporal) and graphify (structural) using Reciprocal Rank Fusion. Auto-injects graph neighbours + MEMORY.md entries into Read tool calls via PreToolUse hook. Ships the auto-rebuild-graph, crystallize, contradiction-check, and proceduralize hook scripts that wire compound intelligence together.",
+  "author": {
+    "name": "Banchan Kiro A Sangma",
+    "email": "bkirosangma@gmail.com"
+  }
+}

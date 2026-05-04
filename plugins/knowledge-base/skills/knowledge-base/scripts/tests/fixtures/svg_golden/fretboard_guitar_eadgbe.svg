@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="240" viewBox="0 0 700 240" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="700" height="240" fill="#ffffff"/>
+  <!-- kb-meta: type=fretboard args={'type': 'fretboard', 'width': 700, 'height': 240, 'theme': 'light', 'title': '', 'play': False, 'clef': 'treble', 'key': 'C major', 'time_sig': '4/4', 'notes': '0,2,3', 'strings': 6, 'tuning': 'EADGBE', 'highlight': '', 'jazz_extensions': False, 'quartertones': False, 'raga': '', 'shrutis': 12, 'show_vadi': False, 'jins': '', 'root': 'D', 'show_cents': False, 'pattern': '', 'instrument': 'guitar', 'chord': '', 'fingering': '', 'mode': 'I', 'lyric': '', 'neumes': '', 'scale': '', 'steps': 16, 'tracks': '', 'tala': '', 'style': '', 'strum': False, 'arpeggiate': False} -->
+  <line x1="70" y1="70" x2="630" y2="70" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="60" y="74" text-anchor="end" fill="#6b7280" font-size="12" font-weight="400">E</text>
+  <line x1="70" y1="94" x2="630" y2="94" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="60" y="98" text-anchor="end" fill="#6b7280" font-size="12" font-weight="400">B</text>
+  <line x1="70" y1="118" x2="630" y2="118" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="60" y="122" text-anchor="end" fill="#6b7280" font-size="12" font-weight="400">G</text>
+  <line x1="70" y1="142" x2="630" y2="142" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="60" y="146" text-anchor="end" fill="#6b7280" font-size="12" font-weight="400">D</text>
+  <line x1="70" y1="166" x2="630" y2="166" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="60" y="170" text-anchor="end" fill="#6b7280" font-size="12" font-weight="400">A</text>
+  <line x1="70" y1="190" x2="630" y2="190" stroke="#1f2937" stroke-width="1.5"/>
+  <text x="60" y="194" text-anchor="end" fill="#6b7280" font-size="12" font-weight="400">E</text>
+  <line x1="70.0" y1="70" x2="70.0" y2="190" stroke="#1f2937" stroke-width="3"/>
+  <line x1="116.66666666666666" y1="70" x2="116.66666666666666" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <line x1="163.33333333333331" y1="70" x2="163.33333333333331" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <line x1="210.0" y1="70" x2="210.0" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <line x1="256.66666666666663" y1="70" x2="256.66666666666663" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <line x1="303.3333333333333" y1="70" x2="303.3333333333333" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <line x1="350.0" y1="70" x2="350.0" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <line x1="396.66666666666663" y1="70" x2="396.66666666666663" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <line x1="443.3333333333333" y1="70" x2="443.3333333333333" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <line x1="490.0" y1="70" x2="490.0" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <line x1="536.6666666666666" y1="70" x2="536.6666666666666" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <line x1="583.3333333333333" y1="70" x2="583.3333333333333" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <line x1="630.0" y1="70" x2="630.0" y2="190" stroke="#1f2937" stroke-width="1"/>
+  <circle cx="186.66666666666666" cy="206" r="3" fill="#6b7280" stroke="none" stroke-width="1"/>
+  <circle cx="280.0" cy="206" r="3" fill="#6b7280" stroke="none" stroke-width="1"/>
+  <circle cx="373.3333333333333" cy="206" r="3" fill="#6b7280" stroke="none" stroke-width="1"/>
+  <circle cx="466.66666666666663" cy="206" r="3" fill="#6b7280" stroke="none" stroke-width="1"/>
+  <circle cx="601.6666666666666" cy="206" r="3" fill="#6b7280" stroke="none" stroke-width="1"/>
+  <circle cx="611.6666666666666" cy="206" r="3" fill="#6b7280" stroke="none" stroke-width="1"/>
+  <circle cx="56" cy="70" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="56" cy="94" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="56" cy="118" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="56" cy="142" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="56" cy="166" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="56" cy="190" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="140.0" cy="70" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="140.0" cy="94" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="140.0" cy="118" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="140.0" cy="142" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="140.0" cy="166" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="140.0" cy="190" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="186.66666666666666" cy="70" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="186.66666666666666" cy="94" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="186.66666666666666" cy="118" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="186.66666666666666" cy="142" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="186.66666666666666" cy="166" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="186.66666666666666" cy="190" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+</svg>
