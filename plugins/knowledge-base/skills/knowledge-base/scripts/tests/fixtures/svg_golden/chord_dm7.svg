@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="240" viewBox="0 0 200 240" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="200" height="240" fill="#ffffff"/>
+  <!-- kb-meta: type=chord-box args={'type': 'chord-box', 'width': 200, 'height': 240, 'theme': 'light', 'title': '', 'play': False, 'clef': 'treble', 'key': 'C major', 'time_sig': '4/4', 'notes': '', 'strings': 6, 'tuning': 'EADGBE', 'highlight': '', 'jazz_extensions': False, 'quartertones': False, 'raga': '', 'shrutis': 12, 'show_vadi': False, 'jins': '', 'root': 'D', 'show_cents': False, 'pattern': '', 'instrument': 'guitar', 'chord': 'Dm7', 'fingering': 'x x 0 2 1 1', 'mode': 'I', 'lyric': '', 'neumes': '', 'scale': '', 'steps': 16, 'tracks': '', 'tala': '', 'style': '', 'strum': False, 'arpeggiate': False} -->
+  <text x="85" y="50" text-anchor="middle" fill="#1f2937" font-size="18" font-weight="700">Dm7</text>
+  <line x1="40" y1="70" x2="40" y2="210" stroke="#1f2937" stroke-width="1"/>
+  <line x1="58" y1="70" x2="58" y2="210" stroke="#1f2937" stroke-width="1"/>
+  <line x1="76" y1="70" x2="76" y2="210" stroke="#1f2937" stroke-width="1"/>
+  <line x1="94" y1="70" x2="94" y2="210" stroke="#1f2937" stroke-width="1"/>
+  <line x1="112" y1="70" x2="112" y2="210" stroke="#1f2937" stroke-width="1"/>
+  <line x1="130" y1="70" x2="130" y2="210" stroke="#1f2937" stroke-width="1"/>
+  <line x1="40" y1="70" x2="130" y2="70" stroke="#1f2937" stroke-width="3"/>
+  <line x1="40" y1="98" x2="130" y2="98" stroke="#1f2937" stroke-width="1"/>
+  <line x1="40" y1="126" x2="130" y2="126" stroke="#1f2937" stroke-width="1"/>
+  <line x1="40" y1="154" x2="130" y2="154" stroke="#1f2937" stroke-width="1"/>
+  <line x1="40" y1="182" x2="130" y2="182" stroke="#1f2937" stroke-width="1"/>
+  <line x1="40" y1="210" x2="130" y2="210" stroke="#1f2937" stroke-width="1"/>
+  <text x="40" y="65" text-anchor="middle" fill="#6b7280" font-size="14" font-weight="400">x</text>
+  <text x="58" y="65" text-anchor="middle" fill="#6b7280" font-size="14" font-weight="400">x</text>
+  <circle cx="76" cy="62" r="5" fill="none" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="94" cy="112.0" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="112" cy="84.0" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="130" cy="84.0" r="7" fill="#3b82f6" stroke="#ffffff" stroke-width="2"/>
+</svg>

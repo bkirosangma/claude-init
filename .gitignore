@@ -1,5 +1,4 @@
-# Graphify generated output
-graphify-out/
-
-# Claude Code project settings
-.claude/
+.DS_Store
+.claude/settings.local.json
+node_modules/
+*.log

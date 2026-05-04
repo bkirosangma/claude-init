@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="500" height="500" fill="#ffffff"/>
+  <!-- kb-meta: type=raga-clock args={'type': 'raga-clock', 'width': 500, 'height': 500, 'theme': 'light', 'title': '', 'play': False, 'clef': 'treble', 'key': 'C major', 'time_sig': '4/4', 'notes': '', 'strings': 6, 'tuning': 'EADGBE', 'highlight': '', 'jazz_extensions': False, 'quartertones': False, 'raga': 'Yaman', 'shrutis': 12, 'show_vadi': False, 'jins': '', 'root': 'D', 'show_cents': False, 'pattern': '', 'instrument': 'guitar', 'chord': '', 'fingering': '', 'mode': 'I', 'lyric': '', 'neumes': '', 'scale': '', 'steps': 16, 'tracks': '', 'tala': '', 'style': '', 'strum': False, 'arpeggiate': False} -->
+  <circle cx="250" cy="250" r="190" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+  <circle cx="250.0" cy="60.0" r="6" fill="#3b82f6" stroke="none" stroke-width="1"/>
+  <text x="250.0" y="48.0" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="700">Sa</text>
+  <circle cx="345.0" cy="85.45517328095664" r="6" fill="#6b7280" stroke="none" stroke-width="1"/>
+  <text x="345.0" y="73.45517328095664" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="400">re</text>
+  <circle cx="414.54482671904333" cy="155.0" r="6" fill="#3b82f6" stroke="none" stroke-width="1"/>
+  <text x="414.54482671904333" y="143.0" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="700">Re</text>
+  <circle cx="440.0" cy="250.0" r="6" fill="#6b7280" stroke="none" stroke-width="1"/>
+  <text x="440.0" y="238.0" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="400">ga</text>
+  <circle cx="414.5448267190434" cy="345.0" r="6" fill="#3b82f6" stroke="none" stroke-width="1"/>
+  <text x="414.5448267190434" y="333.0" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="700">Ga</text>
+  <circle cx="345.00000000000006" cy="414.5448267190433" r="6" fill="#6b7280" stroke="none" stroke-width="1"/>
+  <text x="345.00000000000006" y="402.5448267190433" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="400">Ma</text>
+  <circle cx="250.0" cy="440.0" r="6" fill="#3b82f6" stroke="none" stroke-width="1"/>
+  <text x="250.0" y="428.0" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="700">Ma#</text>
+  <circle cx="155.00000000000003" cy="414.5448267190434" r="6" fill="#3b82f6" stroke="none" stroke-width="1"/>
+  <text x="155.00000000000003" y="402.5448267190434" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="700">Pa</text>
+  <circle cx="85.4551732809567" cy="345.00000000000006" r="6" fill="#6b7280" stroke="none" stroke-width="1"/>
+  <text x="85.4551732809567" y="333.00000000000006" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="400">dha</text>
+  <circle cx="60.0" cy="250.00000000000003" r="6" fill="#3b82f6" stroke="none" stroke-width="1"/>
+  <text x="60.0" y="238.00000000000003" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="700">Dha</text>
+  <circle cx="85.45517328095659" cy="155.0000000000001" r="6" fill="#6b7280" stroke="none" stroke-width="1"/>
+  <text x="85.45517328095659" y="143.0000000000001" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="400">ni</text>
+  <circle cx="154.99999999999991" cy="85.4551732809567" r="6" fill="#3b82f6" stroke="none" stroke-width="1"/>
+  <text x="154.99999999999991" y="73.4551732809567" text-anchor="middle" fill="#1f2937" font-size="11" font-weight="700">Ni</text>
+  <line x1="250.0" y1="60.0" x2="414.54482671904333" y2="155.0" stroke="#3b82f6" stroke-width="1.5"/>
+  <line x1="414.54482671904333" y1="155.0" x2="414.5448267190434" y2="345.0" stroke="#3b82f6" stroke-width="1.5"/>
+  <line x1="414.5448267190434" y1="345.0" x2="250.0" y2="440.0" stroke="#3b82f6" stroke-width="1.5"/>
+  <line x1="250.0" y1="440.0" x2="155.00000000000003" y2="414.5448267190434" stroke="#3b82f6" stroke-width="1.5"/>
+  <line x1="155.00000000000003" y1="414.5448267190434" x2="60.0" y2="250.00000000000003" stroke="#3b82f6" stroke-width="1.5"/>
+  <line x1="60.0" y1="250.00000000000003" x2="154.99999999999991" y2="85.4551732809567" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="250" y="255" text-anchor="middle" fill="#1f2937" font-size="18" font-weight="700">Yaman</text>
+</svg>

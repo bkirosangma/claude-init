@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="200" viewBox="0 0 600 200" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="600" height="200" fill="#ffffff"/>
+  <!-- kb-meta: type=gongche args={'type': 'gongche', 'width': 600, 'height': 200, 'theme': 'light', 'title': '', 'play': False, 'clef': 'treble', 'key': 'C major', 'time_sig': '4/4', 'notes': '上 尺 工 六 五', 'strings': 6, 'tuning': 'EADGBE', 'highlight': '', 'jazz_extensions': False, 'quartertones': False, 'raga': '', 'shrutis': 12, 'show_vadi': False, 'jins': '', 'root': 'D', 'show_cents': False, 'pattern': '', 'instrument': 'guitar', 'chord': '', 'fingering': '', 'mode': 'I', 'lyric': '', 'neumes': '', 'scale': '', 'steps': 16, 'tracks': '', 'tala': '', 'style': '', 'strum': False, 'arpeggiate': False} -->
+  <text x="100" y="108" text-anchor="middle" fill="#1f2937" font-size="22" font-weight="400">上</text>
+  <line x1="150" y1="80" x2="150" y2="140" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="200" y="108" text-anchor="middle" fill="#1f2937" font-size="22" font-weight="400">尺</text>
+  <line x1="250" y1="80" x2="250" y2="140" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="300" y="108" text-anchor="middle" fill="#1f2937" font-size="22" font-weight="400">工</text>
+  <line x1="350" y1="80" x2="350" y2="140" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="400" y="108" text-anchor="middle" fill="#1f2937" font-size="22" font-weight="400">六</text>
+  <line x1="450" y1="80" x2="450" y2="140" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="500" y="108" text-anchor="middle" fill="#1f2937" font-size="22" font-weight="400">五</text>
+</svg>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="500" height="500" fill="#ffffff"/>
+  <!-- kb-meta: type=circle-of-fifths args={'type': 'circle-of-fifths', 'width': 500, 'height': 500, 'theme': 'light', 'title': '', 'play': False, 'clef': 'treble', 'key': 'C major', 'time_sig': '4/4', 'notes': '', 'strings': 6, 'tuning': 'EADGBE', 'highlight': 'C,G,D', 'jazz_extensions': False, 'quartertones': False, 'raga': '', 'shrutis': 12, 'show_vadi': False, 'jins': '', 'root': 'D', 'show_cents': False, 'pattern': '', 'instrument': 'guitar', 'chord': '', 'fingering': '', 'mode': 'I', 'lyric': '', 'neumes': '', 'scale': '', 'steps': 16, 'tracks': '', 'tala': '', 'style': '', 'strum': False, 'arpeggiate': False} -->
+  <circle cx="250" cy="250" r="190" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+  <circle cx="250" cy="250" r="130" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="250.0" y="65.0" text-anchor="middle" fill="#3b82f6" font-size="18" font-weight="700">C</text>
+  <text x="250.0" y="124.0" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">a</text>
+  <line x1="250.0" y1="126.0" x2="250.0" y2="78.0" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="345.0" y="90.45517328095664" text-anchor="middle" fill="#3b82f6" font-size="18" font-weight="700">G</text>
+  <text x="315.0" y="141.41669750802296" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">e</text>
+  <line x1="312.0" y1="142.6128499307296" x2="336.0" y2="101.04363054907654" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="414.54482671904333" y="160.0" text-anchor="middle" fill="#3b82f6" font-size="18" font-weight="700">D</text>
+  <text x="362.583302491977" y="189.0" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">b</text>
+  <line x1="357.3871500692704" y1="188.0" x2="398.95636945092343" y2="164.0" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="440.0" y="255.0" text-anchor="middle" fill="#1f2937" font-size="18" font-weight="700">A</text>
+  <text x="380.0" y="254.0" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">f#</text>
+  <line x1="374.0" y1="250.0" x2="422.0" y2="250.0" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="414.5448267190434" y="350.0" text-anchor="middle" fill="#1f2937" font-size="18" font-weight="700">E</text>
+  <text x="362.58330249197707" y="319.0" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">c#</text>
+  <line x1="357.38715006927043" y1="312.0" x2="398.9563694509235" y2="336.0" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="345.00000000000006" y="419.5448267190433" text-anchor="middle" fill="#1f2937" font-size="18" font-weight="700">B</text>
+  <text x="315.00000000000006" y="366.583302491977" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">g#</text>
+  <line x1="312.00000000000006" y1="357.3871500692704" x2="336.00000000000006" y2="398.95636945092343" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="250.0" y="445.0" text-anchor="middle" fill="#1f2937" font-size="18" font-weight="700">F#</text>
+  <text x="250.0" y="384.0" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">d#</text>
+  <line x1="250.0" y1="374.0" x2="250.0" y2="422.0" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="155.00000000000003" y="419.5448267190434" text-anchor="middle" fill="#1f2937" font-size="18" font-weight="700">C#</text>
+  <text x="185.00000000000003" y="366.58330249197707" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">a#</text>
+  <line x1="188.00000000000003" y1="357.38715006927043" x2="164.00000000000003" y2="398.9563694509235" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="85.4551732809567" y="350.00000000000006" text-anchor="middle" fill="#1f2937" font-size="18" font-weight="700">G#</text>
+  <text x="137.416697508023" y="319.00000000000006" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">f</text>
+  <line x1="142.61284993072962" y1="312.00000000000006" x2="101.04363054907657" y2="336.00000000000006" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="60.0" y="255.00000000000003" text-anchor="middle" fill="#1f2937" font-size="18" font-weight="700">D#</text>
+  <text x="120.0" y="254.00000000000003" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">c</text>
+  <line x1="126.0" y1="250.00000000000003" x2="78.0" y2="250.00000000000003" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="85.45517328095659" y="160.0000000000001" text-anchor="middle" fill="#1f2937" font-size="18" font-weight="700">A#</text>
+  <text x="137.41669750802293" y="189.00000000000009" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">g</text>
+  <line x1="142.61284993072957" y1="188.00000000000009" x2="101.04363054907648" y2="164.0000000000001" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="154.99999999999991" y="90.4551732809567" text-anchor="middle" fill="#1f2937" font-size="18" font-weight="700">F</text>
+  <text x="184.99999999999994" y="141.416697508023" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">d</text>
+  <line x1="187.99999999999994" y1="142.61284993072962" x2="163.99999999999994" y2="101.0436305490766" stroke="#e5e7eb" stroke-width="1"/>
+</svg>

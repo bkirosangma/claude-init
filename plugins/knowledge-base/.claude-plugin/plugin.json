@@ -1,0 +1,8 @@
+{
+  "name": "knowledge-base",
+  "description": "Unified skill for managing knowledge-base vaults. Sub-commands: init (set up a vault), document, diagram, create (doc + linked diagram), edit (modify diagram JSON with placement constraints), validate, transform, plus music-domain features: svg (music notation visualisation — staff, fretboard, chord boxes), guitar-tabs (.alphatex generation). Trigger: /knowledge-base or /kb.",
+  "author": {
+    "name": "Banchan Kiro A Sangma",
+    "email": "bkirosangma@gmail.com"
+  }
+}

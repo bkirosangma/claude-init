@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="200" viewBox="0 0 600 200" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="600" height="200" fill="#ffffff"/>
+  <!-- kb-meta: type=staff args={'type': 'staff', 'width': 600, 'height': 200, 'theme': 'light', 'title': '', 'play': False, 'clef': 'treble', 'key': 'C major', 'time_sig': '4/4', 'notes': 'C4-q D4-q E4-q F4-q', 'strings': 6, 'tuning': 'EADGBE', 'highlight': '', 'jazz_extensions': False, 'quartertones': False, 'raga': '', 'shrutis': 12, 'show_vadi': False, 'jins': '', 'root': 'D', 'show_cents': False, 'pattern': '', 'instrument': 'guitar', 'chord': '', 'fingering': '', 'mode': 'I', 'lyric': '', 'neumes': '', 'scale': '', 'steps': 16, 'tracks': '', 'tala': '', 'style': '', 'strum': False, 'arpeggiate': False} -->
+  <line x1="60" y1="80" x2="540" y2="80" stroke="#1f2937" stroke-width="1"/>
+  <line x1="60" y1="90" x2="540" y2="90" stroke="#1f2937" stroke-width="1"/>
+  <line x1="60" y1="100" x2="540" y2="100" stroke="#1f2937" stroke-width="1"/>
+  <line x1="60" y1="110" x2="540" y2="110" stroke="#1f2937" stroke-width="1"/>
+  <line x1="60" y1="120" x2="540" y2="120" stroke="#1f2937" stroke-width="1"/>
+  <text x="30" y="105" text-anchor="middle" fill="#3b82f6" font-size="24" font-weight="700">G</text>
+  <text x="66" y="95" text-anchor="start" fill="#1f2937" font-size="14" font-weight="700">4</text>
+  <text x="66" y="115" text-anchor="start" fill="#1f2937" font-size="14" font-weight="700">4</text>
+  <circle cx="100" cy="130" r="5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <line x1="105" y1="130" x2="105" y2="100" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="210" cy="125" r="5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <line x1="215" y1="125" x2="215" y2="95" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="320" cy="120" r="5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <line x1="325" y1="120" x2="325" y2="90" stroke="#1f2937" stroke-width="1.5"/>
+  <circle cx="430" cy="115" r="5" fill="#1f2937" stroke="#1f2937" stroke-width="1.5"/>
+  <line x1="435" y1="115" x2="435" y2="85" stroke="#1f2937" stroke-width="1.5"/>
+</svg>

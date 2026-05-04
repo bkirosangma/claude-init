@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="260" viewBox="0 0 700 260" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="700" height="260" fill="#ffffff"/>
+  <!-- kb-meta: type=clave args={'type': 'clave', 'width': 700, 'height': 260, 'theme': 'light', 'title': '', 'tradition': 'latin', 'play': False, 'clef': 'treble', 'key': 'C major', 'time_sig': '4/4', 'notes': '', 'strings': 6, 'tuning': 'EADGBE', 'highlight': '', 'jazz_extensions': False, 'quartertones': False, 'raga': '', 'shrutis': 12, 'show_vadi': False, 'jins': '', 'root': 'D', 'show_cents': False, 'pattern': '1 0 0 1 0 0 1 0 1 0 0 0 1 0 0 0', 'instrument': 'guitar', 'chord': '', 'fingering': '', 'mode': 'I', 'lyric': '', 'neumes': '', 'scale': '', 'steps': 16, 'tracks': '', 'tala': '', 'style': '3-2', 'strum': False, 'arpeggiate': False} -->
+  <circle cx="68.75" cy="120" r="10" fill="#e11d48" stroke="#ffffff" stroke-width="2"/>
+  <line x1="68.75" y1="134" x2="68.75" y2="142" stroke="#64748b" stroke-width="1"/>
+  <circle cx="106.25" cy="120" r="8" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <circle cx="143.75" cy="120" r="8" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <circle cx="181.25" cy="120" r="10" fill="#e11d48" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="218.75" cy="120" r="8" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="218.75" y1="134" x2="218.75" y2="142" stroke="#64748b" stroke-width="1"/>
+  <circle cx="256.25" cy="120" r="8" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <circle cx="293.75" cy="120" r="10" fill="#e11d48" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="331.25" cy="120" r="8" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <circle cx="368.75" cy="120" r="10" fill="#e11d48" stroke="#ffffff" stroke-width="2"/>
+  <line x1="368.75" y1="134" x2="368.75" y2="142" stroke="#64748b" stroke-width="1"/>
+  <circle cx="406.25" cy="120" r="8" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <circle cx="443.75" cy="120" r="8" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <circle cx="481.25" cy="120" r="8" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <circle cx="518.75" cy="120" r="10" fill="#e11d48" stroke="#ffffff" stroke-width="2"/>
+  <line x1="518.75" y1="134" x2="518.75" y2="142" stroke="#64748b" stroke-width="1"/>
+  <circle cx="556.25" cy="120" r="8" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <circle cx="593.75" cy="120" r="8" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <circle cx="631.25" cy="120" r="8" fill="none" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="350" y="170" text-anchor="middle" fill="#6b7280" font-size="12" font-weight="400">3-2</text>
+</svg>

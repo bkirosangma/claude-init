@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="200" viewBox="0 0 600 200" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="600" height="200" fill="#ffffff"/>
+  <!-- kb-meta: type=sargam args={'type': 'sargam', 'width': 600, 'height': 200, 'theme': 'light', 'title': '', 'tradition': 'hindustani', 'play': False, 'clef': 'treble', 'key': 'C major', 'time_sig': '4/4', 'notes': 'Sa Re Ga Ma Pa Dha Ni', 'strings': 6, 'tuning': 'EADGBE', 'highlight': '', 'jazz_extensions': False, 'quartertones': False, 'raga': '', 'shrutis': 12, 'show_vadi': False, 'jins': '', 'root': 'D', 'show_cents': False, 'pattern': '', 'instrument': 'guitar', 'chord': '', 'fingering': '', 'mode': 'I', 'lyric': '', 'neumes': '', 'scale': '', 'steps': 16, 'tracks': '', 'tala': '', 'style': '', 'strum': False, 'arpeggiate': False} -->
+  <rect x="42" y="82" width="70" height="30" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="77" y="106" text-anchor="middle" fill="#dc2626" font-size="15" font-weight="700">Sa</text>
+  <rect x="116" y="82" width="70" height="30" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="151" y="106" text-anchor="middle" fill="#8b5cf6" font-size="15" font-weight="700">Re</text>
+  <rect x="190" y="82" width="70" height="30" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="225" y="106" text-anchor="middle" fill="#8b5cf6" font-size="15" font-weight="700">Ga</text>
+  <rect x="264" y="82" width="70" height="30" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="299" y="106" text-anchor="middle" fill="#dc2626" font-size="15" font-weight="700">Ma</text>
+  <rect x="338" y="82" width="70" height="30" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="373" y="106" text-anchor="middle" fill="#dc2626" font-size="15" font-weight="700">Pa</text>
+  <rect x="412" y="82" width="70" height="30" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="447" y="106" text-anchor="middle" fill="#8b5cf6" font-size="15" font-weight="700">Dha</text>
+  <rect x="486" y="82" width="70" height="30" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="521" y="106" text-anchor="middle" fill="#8b5cf6" font-size="15" font-weight="700">Ni</text>
+</svg>

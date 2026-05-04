@@ -1,0 +1,51 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-init",
+  "description": "Personal Claude Code plugin marketplace by bkirosangma",
+  "owner": {
+    "name": "Banchan Kiro A Sangma",
+    "email": "bkirosangma@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "init-workdir",
+      "description": "Initialize and maintain a multi-repo workspace with compound intelligence (graphify + claude-mem + MEMORY.md), workspace-scoped gitconfig, ignore files, knowledge vault, coding standards, claude-mem worker, ui-ux-pro-max skill, group-organized repo cloning with host detection, idempotent re-init via per-step probes, version-tracked manifest with changelog diff on update, and portable MEMORY.md seed bootstrap.",
+      "author": {
+        "name": "Banchan Kiro A Sangma",
+        "email": "bkirosangma@gmail.com"
+      },
+      "source": "./plugins/init-workdir",
+      "category": "developer-tools"
+    },
+    {
+      "name": "knowledge-base",
+      "description": "Unified skill for managing knowledge-base vaults — architecture docs, design diagrams, ADRs, runbooks, plus music-domain features (SVG notation, guitar tabs, music archetype). Sub-commands: init, document, diagram, create, edit, svg, guitar-tabs, validate, transform. Trigger: /knowledge-base or /kb.",
+      "author": {
+        "name": "Banchan Kiro A Sangma",
+        "email": "bkirosangma@gmail.com"
+      },
+      "source": "./plugins/knowledge-base",
+      "category": "developer-tools"
+    },
+    {
+      "name": "hybrid-search",
+      "description": "Fused search across claude-mem (temporal) and graphify (structural) using Reciprocal Rank Fusion. Auto-injects graph neighbours + MEMORY.md entries on Read via PreToolUse hook. Ships the auto-rebuild-graph, crystallize, contradiction-check, decay, and proceduralize hook scripts that wire compound intelligence together.",
+      "author": {
+        "name": "Banchan Kiro A Sangma",
+        "email": "bkirosangma@gmail.com"
+      },
+      "source": "./plugins/hybrid-search",
+      "category": "developer-tools"
+    },
+    {
+      "name": "compound-dispatch",
+      "description": "Enriches subagent prompts with 'Prior Knowledge' from all three memory systems — graphify (structural), claude-mem (temporal), MEMORY.md (curated) — before dispatching them. Bridges the gap where subagents normally start with blank context.",
+      "author": {
+        "name": "Banchan Kiro A Sangma",
+        "email": "bkirosangma@gmail.com"
+      },
+      "source": "./plugins/compound-dispatch",
+      "category": "developer-tools"
+    }
+  ]
+}

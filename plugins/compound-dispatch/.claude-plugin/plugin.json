@@ -1,0 +1,8 @@
+{
+  "name": "compound-dispatch",
+  "description": "Enriches subagent prompts with 'Prior Knowledge' from all three memory systems — graphify (structural), claude-mem (temporal), MEMORY.md (curated) — before dispatching them. Bridges the gap where subagents normally start with blank context.",
+  "author": {
+    "name": "Banchan Kiro A Sangma",
+    "email": "bkirosangma@gmail.com"
+  }
+}

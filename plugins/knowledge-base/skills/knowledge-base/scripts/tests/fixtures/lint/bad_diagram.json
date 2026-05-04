@@ -1,0 +1,12 @@
+{
+  "title": "Bad Diagram",
+  "layers": [
+    {"id": "layer-a", "label": "Layer A"}
+  ],
+  "nodes": [
+    {"id": "el-x", "label": "X", "layer": "layer-nonexistent"}
+  ],
+  "connections": [
+    {"id": "dl-1", "from": "el-x", "to": "el-missing"}
+  ]
+}
