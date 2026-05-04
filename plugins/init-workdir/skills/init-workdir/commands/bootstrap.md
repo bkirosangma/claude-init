@@ -114,10 +114,21 @@ echo "✓ graphify skill installed via 'graphify install --platform claude'"
 
 ## Step 5 — Install uipro-cli
 
+Source nvm first — this step runs in a fresh shell so the Node installed in Step 3 may not be
+on PATH yet. `\.` is the POSIX equivalent of `source`; the `|| true` avoids aborting under
+`set -e` when nvm is absent on a non-fresh-machine path.
+
 ```bash
+[ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh" && nvm use 22 >/dev/null 2>&1 || true
+
 if command -v uipro >/dev/null 2>&1; then
   echo "✓ uipro $(uipro --version 2>&1 | head -1)"
 else
+  if ! command -v npm >/dev/null 2>&1; then
+    echo "ERROR: npm not found. Re-run Step 3 to install Node 22 via nvm,"
+    echo "or open a new terminal so your shell sources ~/.nvm/nvm.sh."
+    exit 1
+  fi
   echo "+ Installing uipro-cli"
   npm install -g uipro-cli
 fi

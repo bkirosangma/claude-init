@@ -13,6 +13,7 @@ Check both the provider CLI and the compound intelligence stack.
 
 ```bash
 export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
+[ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh" && nvm use 22 >/dev/null 2>&1 || true
 
 # Provider CLI
 case "<provider>" in
@@ -596,15 +597,24 @@ Distributed via the `uipro-cli` npm package and installed into Claude Code as a 
 
 ```bash
 export PATH="$HOME/.bun/bin:$PATH"
+[ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh" && nvm use 22 >/dev/null 2>&1 || true
 
 # Install the CLI globally if missing
 if ! command -v uipro >/dev/null 2>&1; then
-  echo "uipro-cli: MISSING — installing globally via npm"
-  npm install -g uipro-cli
+  if ! command -v npm >/dev/null 2>&1; then
+    echo "uipro-cli: skipped — npm not on PATH (run /init-workdir bootstrap first or open a fresh terminal)"
+  else
+    echo "uipro-cli: MISSING — installing globally via npm"
+    npm install -g uipro-cli
+  fi
 fi
 
 # Idempotent: re-running re-syncs the skill to the latest version
-cd "$WORKDIR" && uipro init --ai claude
+if command -v uipro >/dev/null 2>&1; then
+  cd "$WORKDIR" && uipro init --ai claude
+else
+  echo "uipro-cli: not installed — skipping uipro init (workspace setup continues)"
+fi
 ```
 
 If `npm` is missing, instruct the user to install Node 22+ and re-run `/init-workdir <provider>`.
