@@ -15,21 +15,10 @@ set -o pipefail
 # Deliberately NO `set -e` (per-repo failures must be isolated) and NO `set -u` (empty assoc
 # arrays + optional config keys cause spurious unbound-variable errors that would mask real bugs).
 
-# Walk up from $(pwd) to locate the managed workspace (the directory containing a `.workdir/`
-# or legacy `.init-workdir/` marker). Mirrors how git locates `.git/`. Refuses to run if no
-# marker exists anywhere up the tree — prevents accidental scans of `~/` or unrelated dirs.
-ORIG_PWD=$(pwd)
-WORKDIR="$ORIG_PWD"
-while [ "$WORKDIR" != "/" ] && [ ! -d "$WORKDIR/.workdir" ] && [ ! -d "$WORKDIR/.init-workdir" ]; do
-  WORKDIR=$(dirname "$WORKDIR")
-done
-if [ "$WORKDIR" = "/" ]; then
-  echo "ERROR: no .workdir/ marker found in any parent of $ORIG_PWD" >&2
-  echo "       Run /workdir init <github|gitlab> from your workspace root first," >&2
-  echo "       or cd into a managed workspace before invoking /workdir pull." >&2
-  exit 1
-fi
-[ "$WORKDIR" != "$ORIG_PWD" ] && echo "Detected workdir: $WORKDIR (invoked from $ORIG_PWD)"
+# Locate the workspace root (sets ORIG_PWD, WORKDIR; refuses if no marker found).
+# Also handles the legacy `.init-workdir/` → `.workdir/` migration internally.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/find-workdir.sh"
 
 STATE_DIR="$WORKDIR/.workdir"
 PLAN_FILE="$STATE_DIR/.pull-plan.tsv"
@@ -42,11 +31,6 @@ INCLUDE_WORKSPACE_ROOT=false
 DIVERGED_STRATEGY=rebase
 DIRTY_OVERLAP_STRATEGY=stash
 PARALLELISM=8
-
-# Auto-migrate legacy state dir (v1 .init-workdir/ → v2 .workdir/)
-if [ -d "$WORKDIR/.init-workdir" ] && [ ! -d "$WORKDIR/.workdir" ]; then
-  mv "$WORKDIR/.init-workdir" "$WORKDIR/.workdir"
-fi
 
 # Read config if present
 if [ -f "$CONFIG" ]; then

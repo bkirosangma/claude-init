@@ -244,14 +244,27 @@ plugins/workdir/
         ├── SKILL.md                      # router and metadata (frontmatter + sub-command table)
         ├── CHANGELOG.md                  # newest-first version history; drives upgrade diffs
         ├── CODING_STANDARDS.md           # seeded into each workspace
-        ├── commands/
-        │   ├── bootstrap.md              # fresh-machine dependency install (bootstrap subcommand)
-        │   ├── init.md                   # 15-step setup flow (init <provider> subcommand)
-        │   ├── update.md                 # incremental upgrade flow (update subcommand)
-        │   ├── clone.md                  # repo clone + scaffolding (clone subcommand)
-        │   └── pull.md                   # plan/execute git pull across all repos (pull subcommand)
-        ├── scripts/
-        │   └── pull.sh                   # main pull-all script (plan + execute phases)
+        ├── commands/                    # thin orchestrators — confirm + invoke scripts
+        │   ├── bootstrap.md
+        │   ├── init.md
+        │   ├── update.md
+        │   ├── clone.md
+        │   └── pull.md
+        ├── scripts/                      # mechanical workhorses called from commands/*.md
+        │   ├── bootstrap.sh
+        │   ├── init.sh
+        │   ├── update.sh
+        │   ├── clone.sh
+        │   ├── pull.sh
+        │   ├── render-claude-md.sh       # render workspace CLAUDE.md from template
+        │   └── lib/                      # sourceable helpers used by multiple scripts
+        │       ├── find-workdir.sh       # walk up to locate the workspace root
+        │       ├── init-steps.sh         # idempotent step function library
+        │       ├── write-manifest.sh
+        │       └── changelog-diff.sh
+        ├── templates/                    # single sources of truth for generated content
+        │   ├── workspace-CLAUDE.md.template
+        │   └── test-cases-README.md
         └── memory-seeds/
             └── feedback_ui_ux_pro_max_with_superpowers.md
 ```

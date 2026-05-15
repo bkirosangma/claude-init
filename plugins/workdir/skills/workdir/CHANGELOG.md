@@ -6,6 +6,43 @@ newest-first.
 
 Format: `## <version> — <YYYY-MM-DD>` followed by a bulleted list of changes.
 
+## 2.2.0 — 2026-05-15
+Script consolidation — moves mechanical work from LLM-driven `.md` orchestration into bash
+scripts. Same user-facing behaviour, ~70% less LLM input per command. Internal-only; no
+breaking changes to slash-command syntax or workspace state layout.
+
+- **`scripts/bootstrap.sh`** — fresh-machine setup. `commands/bootstrap.md` shrinks to a
+  one-line confirm + one-line script invocation (was ~200 lines of inline bash blocks)
+- **`templates/workspace-CLAUDE.md.template`** + **`scripts/render-claude-md.sh`** — the
+  workspace CLAUDE.md content (~250 lines) lives in a template, rendered with placeholder
+  substitution. Existing `## Projects` @include lines are preserved on re-render. Replaces
+  the previous flow where the LLM rewrote the full markdown body every time
+- **`scripts/lib/find-workdir.sh`** — sourceable workspace-root walk-up. Used by every
+  command (`pull`, `update`, `clone`, `init`). Hard refusal when no `.workdir/` marker is
+  found anywhere up the tree (soft fallback for `init` to handle the fresh-init case)
+- **`scripts/lib/write-manifest.sh`** — `.workdir/state.json` writer. Used by `init.sh` and
+  `update.sh`
+- **`scripts/lib/changelog-diff.sh`** — print the CHANGELOG sections newer than a given
+  prior version. Used by `init.md` and `update.sh`
+- **`scripts/lib/init-steps.sh`** — sourceable function library: `step_verify_prereqs`,
+  `step_detect_prior`, `step_gitconfig`, `step_ignores`, `step_graphify_hook`,
+  `step_coding_standards`, `step_render_claude_md`, `step_claude_mem_worker`, `step_uipro`,
+  `step_memory_seeds`. Each is idempotent (probe-then-apply); used by both `init.sh` and
+  `update.sh`
+- **`scripts/init.sh`** — runs every idempotent step in order, then writes the manifest.
+  Replaces ~600 lines of inline bash in `commands/init.md`
+- **`scripts/update.sh`** — runs the upgrade-relevant subset (skips gitconfig, prereqs,
+  graph build). `--plan` mode previews without mutating. Replaces the previous flow where
+  the LLM had to re-read `init.md` and execute specific named steps
+- **`scripts/clone.sh`** — URL/host resolution, clone, test-cases scaffold (from
+  `templates/test-cases-README.md`), idempotent `@include` insertion into the workspace
+  CLAUDE.md, cross-repo graph rebuild. Emits parseable `KEY=VALUE` output for the LLM
+  orchestrator to read. `Features.md` content generation stays LLM-driven (semantic work)
+- `commands/bootstrap.md`, `init.md`, `update.md`, `clone.md` rewritten as thin
+  orchestrators that handle user prompts via `AskUserQuestion` and call the scripts for
+  mechanical work
+- `pull.sh` refactored to source `lib/find-workdir.sh` (was duplicated inline)
+
 ## 2.1.2 — 2026-05-15
 - Fix init.md Step 13 — Memory seed path encoding. The previous encoding only converted `/`
   and `_` to `-`, missing spaces (and other non-alphanumerics) that Claude Code's actual

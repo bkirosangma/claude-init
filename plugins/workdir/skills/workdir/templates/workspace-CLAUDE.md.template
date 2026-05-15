@@ -1,0 +1,239 @@
+# {{WORKDIR_BASENAME}} — Multi-Repo Workspace
+
+Provider: {{PROVIDER}}
+CLI: {{CLI}}
+
+## Projects
+
+<!-- @includes are added automatically when you run /workdir clone -->
+{{PROJECTS_INCLUDES}}
+
+## graphify — Structural Intelligence
+
+This workspace has a cross-repo graphify knowledge graph at `graphify-out/`.
+
+### Rules
+- Before answering architecture or codebase questions across repos, read `graphify-out/GRAPH_REPORT.md` for god nodes and community structure
+- If `graphify-out/wiki/index.md` exists, navigate it instead of reading raw files
+- The graph auto-rebuilds on every Write/Edit via the global PostToolUse hook — no manual rebuild needed for small changes
+- For per-project deep dives, use the project graph: `<group>/<repo>/graphify-out/GRAPH_REPORT.md`
+- Use `/graphify query "question"` for semantic search across all repos
+- Use `/graphify path "A" "B"` to find how two concepts connect
+
+### When to Manually Rebuild
+- After cloning new repos into the workspace
+- After large refactors or batch file operations outside Claude Code
+- Run `/graphify . --update` for incremental rebuild (only changed files)
+
+### Token Efficiency
+- The cross-repo knowledge graph provides ~70x token reduction vs reading raw files
+- Always check `graphify-out/GRAPH_REPORT.md` before doing broad multi-repo searches
+- Use `/graphify query` instead of grep for conceptual questions
+
+## claude-mem — Temporal Intelligence
+
+This workspace uses claude-mem for persistent session memory.
+
+### How It Works
+- Every session automatically captures tool calls, decisions, bug fixes, and architectural choices
+- Observations are stored in `~/.claude-mem/claude-mem.db` with FTS5 full-text search
+- Observations decay over time (Ebbinghaus curve, 30-day half-life) but frequently accessed ones stay alive longer
+- At session end, observations are promoted through 4 tiers:
+  1. **Working memory** — raw tool call observations (auto-captured)
+  2. **Episodic** — session-scoped observations with timestamps
+  3. **Crystallized** — concept clusters distilled into structured pages at `~/.claude-mem/crystallized/`
+  4. **Procedural** — repeated workflows extracted as reusable templates at `~/.claude-mem/procedures/`
+
+### Rules
+- Use `/mem-search <query>` to find relevant work from past sessions
+- When making architectural decisions, explain the "why" — claude-mem captures it for future sessions
+- When fixing bugs, describe the root cause — it becomes searchable knowledge
+- Check past session context before re-solving problems that may have been addressed before
+- Use `/hybrid-search crystals` to view crystallized knowledge pages
+- Use `/hybrid-search procedures` to view extracted workflow recipes
+
+## MEMORY.md — Curated Intelligence
+
+MEMORY.md stores durable, human-curated knowledge that should always be in context.
+
+### What Goes Here (not in claude-mem or graphify)
+- User preferences and corrections (`type: feedback`)
+- Project context, deadlines, stakeholder info (`type: project`)
+- External resource pointers (`type: reference`)
+- User role and expertise (`type: user`)
+
+### Memory Routing Protocol
+Before saving anything, route to the correct system:
+
+| What to save | Where | Why |
+|---|---|---|
+| User preferences, corrections, feedback | MEMORY.md | Curated, durable, user-controlled |
+| Project context, deadlines, stakeholder info | MEMORY.md | Outlives sessions, needs human curation |
+| External resource pointers | MEMORY.md | Stable pointers to external systems |
+| Bug fixes, decisions, discoveries | claude-mem (auto-captured) | High-volume temporal stream, auto-indexed |
+| Code structure, relationships | graphify (auto-discovered) | Derived from source, always fresh via rebuild hooks |
+
+Before saving to MEMORY.md, check:
+1. Does claude-mem already have an observation covering this?
+2. Is this derivable from the code? (graphify will discover it)
+3. Is this a durable preference or a one-time fact? (one-time → claude-mem; durable → MEMORY.md)
+
+## Knowledge Base
+
+All architecture documents and diagrams for this workspace live in `knowledgebase/`.
+
+### Rules
+- Use `/kb document "<topic>"` for architecture docs, decision records, runbooks, and technical notes
+- Use `/kb diagram "<topic>"` for architecture diagrams and visual overviews
+- Use `/kb create "<topic>"` to generate a document and linked diagram together
+- Use `/kb edit <path>` to modify an existing diagram — **never edit diagram JSON directly** (enforces placement constraints, collision checks, and field names)
+- Never write standalone Markdown files for architecture or design content — use `/kb` so content is indexed, cross-referenced, and linked
+- The vault is at `{{WORKDIR}}/knowledgebase/` — all `/kb` commands are scoped to this workspace
+
+### When to Use
+| Need | Command |
+|------|---------|
+| Design a new service or component | `/kb create "<name>"` |
+| Architecture decision record (ADR) | `/kb document "decision: <topic>"` |
+| Debugging runbook | `/kb document "runbook: <topic>"` |
+| System overview or sequence diagram | `/kb diagram "<topic>"` |
+| Modify an existing diagram | `/kb edit <path> "<what to change>"` |
+| Onboarding or operational guide | `/kb document "<topic>"` |
+
+## Coding Standards
+
+This workspace maintains a local copy of coding standards at `CODING_STANDARDS.md`. Read it before writing or reviewing any non-trivial code.
+
+### Rules
+- **Before writing non-trivial code:** read `CODING_STANDARDS.md` for naming, SOLID, architecture, testing, security, and error-handling conventions
+- **Project instructions override workspace standards:** individual repo `CLAUDE.md` files take precedence over this file, which takes precedence over `CODING_STANDARDS.md`
+- **Customizable:** edit `CODING_STANDARDS.md` in this workspace to add project-specific conventions — changes here apply to all repos in this workspace
+
+## Feature & Test Tracking
+
+Every repository in this workspace maintains `Features.md` and `test-cases/` at its root. These are created automatically when a repo is cloned via `/workdir clone`.
+
+### Features.md — Source of Truth for Features
+
+`Features.md` is the canonical catalogue of every user-facing feature and internal sub-system. It drives test scope, onboarding, and scope reviews.
+
+#### Rules
+- **Keep it in sync with the code.** Whenever you add, remove, enhance, rename, or otherwise change a feature, update `Features.md` in the same change set — never in a follow-up.
+- **Scope that triggers an update:** new/removed/renamed modules, components, APIs, CLI commands, data models, configuration options, integrations, or significant internal sub-systems.
+- Adding → add a bullet under the right section with a one-to-two-line description and the file path.
+- Removing → delete the bullet. No tombstones.
+- Enhancing → edit the existing bullet. If a genuinely new capability, add a sub-bullet.
+- **Legend discipline:** `✅` user-observable, `⚙️` internal subsystem, `?` inferred/unverified. Promote `?` once confirmed; never leave a `?` you introduced.
+- **No silent drift.** Any PR that touches source files and leaves `Features.md` untouched is incomplete.
+- **Cross-check on every session.** Before claiming a feature task is done, re-read the affected section of `Features.md` and confirm it still describes reality.
+
+### test-cases/ — Source of Truth for Test Scenarios
+
+`test-cases/` holds the human-readable catalogue of every scenario worth covering, one file per top-level feature bucket, mirroring `Features.md`'s section numbering. It is the scope contract between features and tests.
+
+#### Rules
+- **Keep it in sync with Features.md.** When a feature is added, removed, renamed, or enhanced, update both `Features.md` AND the owning file under `test-cases/` in the same change set.
+- **Add a case** using the next free number in the matching section. Start new cases at status ❌.
+- **Never renumber existing IDs.** If a case is deleted, leave its number unused — new cases continue past it.
+- **Flip the status marker** (❌ → ✅ / 🟡 / 🧪) in the same commit as the test that covers it. Use 🚫 with a one-line reason only when consciously out of scope.
+- **Cross-reference tests by ID.** Test names or comments should include the case ID so grep finds both directions.
+- **Prose only.** Actual test files live in the test framework directories. `test-cases/` is scenario descriptions, not code.
+
+## UI/UX Design — Design Intelligence
+
+The `ui-ux-pro-max` skill is installed in this workspace via `uipro-cli`. It provides design
+system generation, UI style/color/font/UX recommendations, and frontend code generation across
+15 stacks.
+
+### Rules
+- **Use this skill for all UI/UX work** — new designs, design audits, design edits, component
+  styling, color/font/layout decisions, accessibility reviews, and frontend code generation
+- The skill auto-activates when the request involves design, styling, layout, components, or
+  visual decisions — let it handle the design reasoning rather than freelancing
+- For UI implementation work, prefer the skill's stack-aware code generation over ad-hoc
+  styling — it bakes in spacing, color tokens, accessibility, and responsive layout
+- Re-sync to the latest version with `uipro update`; reinstall with `uipro init --ai claude`
+
+### When to Use
+| Need | Action |
+|------|--------|
+| New design system for a service/app | Invoke ui-ux-pro-max with project context |
+| Audit existing UI for design issues | Invoke ui-ux-pro-max with the component or page |
+| Edit/improve a component's styling | Invoke ui-ux-pro-max with the current code |
+| Pick palette / fonts / UI style | Invoke ui-ux-pro-max with product category |
+| Generate UI code in a target stack | Invoke ui-ux-pro-max with the design + stack |
+
+### Superpowers Integration
+
+ui-ux-pro-max does **not** auto-pair with superpowers skills — they're independent skills loaded
+into the same context. Whenever a superpowers workflow touches UI, invoke ui-ux-pro-max
+alongside the workflow skill:
+
+| Superpowers step | How ui-ux-pro-max plugs in |
+|---|---|
+| `brainstorming` for a UI feature | Pull style/palette/layout direction from ui-ux-pro-max before the brainstorm crystallises |
+| `writing-plans` for UI work | ui-ux-pro-max informs component breakdown, design tokens, and stack-specific code targets |
+| `executing-plans` / `subagent-driven-development` | Name the design constraints in the subagent prompt so the dispatched agent invokes ui-ux-pro-max alongside its primary skill (compound-dispatch will not surface this on its own) |
+| `systematic-debugging` for a UI bug | Bring in ui-ux-pro-max for visual/layout root-cause hypotheses |
+| `requesting-code-review` / `receiving-code-review` on UI code | Use ui-ux-pro-max as a second opinion on accessibility, spacing, color contrast, responsive behaviour |
+
+## superpowers — Workflow Intelligence
+
+All significant code changes in this workspace go through superpowers skills. Skipping them bypasses compound intelligence context.
+
+### Development Workflow
+
+| Situation | Skills to invoke |
+|-----------|-----------------|
+| Starting a new feature | `superpowers:brainstorming` → `superpowers:writing-plans` → `superpowers:test-driven-development` |
+| Executing a written plan | `superpowers:executing-plans` |
+| Debugging any failure | `superpowers:systematic-debugging` |
+| Completing / about to claim done | `superpowers:verification-before-completion` |
+| Requesting code review | `superpowers:requesting-code-review` |
+| Receiving code review feedback | `superpowers:receiving-code-review` |
+| UI/UX work inside any workflow | Pair the workflow skill with `ui-ux-pro-max` (e.g. brainstorming + ui-ux-pro-max for new components, executing-plans + ui-ux-pro-max for UI implementation tasks) — see UI/UX Design § Superpowers Integration |
+
+### Compound-Dispatch Integration
+
+Every superpowers skill that dispatches subagents routes through compound-dispatch — subagents receive prior knowledge from all three memory systems automatically.
+
+### Rules
+- **Before any subagent dispatch** — including those launched by superpowers skills — run `/compound-dispatch` to inject graph context, temporal memory, and curated preferences into the subagent prompt
+- superpowers brainstorming: compound-dispatch injects structural graph context so brainstorms are aware of existing architecture
+- superpowers TDD: compound-dispatch injects past test patterns and prior bug fixes
+- superpowers debugging: compound-dispatch injects prior observations about the failing area
+- superpowers code-review: compound-dispatch injects coding preferences from MEMORY.md; findings are saved back to MEMORY.md after the review
+
+## Compound Intelligence
+
+graphify (structural) + claude-mem (temporal) + MEMORY.md (curated) = unified intelligence.
+
+### How It Works Together
+- **On file read**: The PreToolUse hook auto-injects graph neighbors + relevant MEMORY.md entries (session-deduped, token-budgeted)
+- **On file write/edit**: The PostToolUse hook auto-rebuilds the cross-repo graph incrementally (rate-limited to 30s)
+- **On subagent dispatch** (including superpowers skills): `/compound-dispatch` enriches each subagent with "Prior Knowledge" from all 3 systems via `gather-context.py`
+- **On session end**: Observations crystallize into knowledge pages; repeated workflows become procedures
+- **On observation access**: Relevance counter increments, extending the observation's decay half-life
+- **Contradiction detection**: New observations are checked against similar older ones; conflicts are flagged
+
+### Available Commands
+| Command | What it does |
+|---------|-------------|
+| `/graphify .` | Build/rebuild cross-repo knowledge graph |
+| `/graphify . --update` | Incremental rebuild (changed files only) |
+| `/graphify query "question"` | Semantic search across all repos |
+| `/hybrid-search "topic"` | Fused search across temporal + structural |
+| `/hybrid-search contradictions` | View detected observation conflicts |
+| `/hybrid-search crystals` | View crystallized knowledge pages |
+| `/hybrid-search procedures` | View extracted workflow recipes |
+| `/mem-search "query"` | Search claude-mem observation history |
+| `/compound-dispatch` | Enrich subagent prompt with unified context |
+| `/workdir clone <url>` | Clone a repo and register it in this workspace |
+| `/workdir pull` | Pull latest for every repo in the workspace |
+
+## Git Configuration
+
+Provider: {{PROVIDER}}
+Identity: `{{NAME}} <{{EMAIL}}>`
+Config file: `{{WORKDIR}}/.gitconfig`
+Applied to all repos via `~/.gitconfig` includeIf.
