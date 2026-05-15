@@ -116,12 +116,43 @@ Roadmap flows represent **learning paths** — orderings through the topics. A t
 
 ```json
 {
-  "id": "flow-minimum-path",
-  "name": "Minimum Viable Path",
+  "id": "flow-fullstack-path",
+  "name": "Full-Stack Web Path",
   "category": "Learning Paths",
-  "connectionIds": ["dl-html-css", "dl-css-js", "dl-js-react", "dl-react-deploy"]
+  "connectionIds": ["dl-html-css", "dl-css-js", "dl-js-react", "dl-js-node", "dl-react-deploy", "dl-node-deploy"],
+  "nodeOrders": {
+    "el-html": 1, "el-css": 1,
+    "el-js": 2,
+    "el-react": 3, "el-node": 3,
+    "el-deploy": 4
+  },
+  "startNodeIds": ["el-html", "el-css"],
+  "endNodeIds": ["el-deploy"]
 }
 ```
+
+In this example, **HTML and CSS are co-equal starting points** — both have `nodeOrders` value `1` and both appear in `startNodeIds`, signalling that a learner can begin with either (or both in parallel). **JavaScript** is order `2` — the single bridge between foundations and frameworks. **React and Node** are **parallel mid-path topics**, both at order `3`, reflecting that a full-stack learner picks them up in either order. **Deploy** is the single end at order `4`, listed in `endNodeIds`. For "choose-your-path" roadmaps where learners specialise (e.g., frontend specialist, backend specialist, mobile specialist), it is common to have multiple ends — name several specialisations as `endNodeIds` so each terminal topic shows as a valid finish line.
+
+A second, deliberately **minimal** companion — the `flow-minimum-path` shape that a fresh roadmap should always start with — looks like this:
+
+```json
+{
+  "id": "flow-minimum-path",
+  "name": "Minimum Path",
+  "category": "Learning Paths",
+  "connectionIds": ["dl-html-css", "dl-css-js", "dl-js-deploy"],
+  "nodeOrders": {
+    "el-html": 1,
+    "el-css": 2,
+    "el-js": 3,
+    "el-deploy": 4
+  },
+  "startNodeIds": ["el-html"],
+  "endNodeIds": ["el-deploy"]
+}
+```
+
+The minimum path is intentionally linear — one start, one end, no branches — and represents the "what's the bare minimum I need to know?" answer. Always author this flow first; richer paths (`flow-fullstack-path` above, `flow-specialist-path`, etc.) are layered on top.
 
 **Recommended flows for any roadmap:**
 

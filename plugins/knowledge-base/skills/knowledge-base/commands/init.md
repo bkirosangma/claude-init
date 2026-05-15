@@ -2,6 +2,8 @@
 
 Initialize a folder as a Knowledge Base vault. Creates the `.archdesigner/` config directory, CLAUDE.md, MEMORY.md with memory files, optional starter documents, and installs graphify hooks for structural intelligence.
 
+> **Pre-Check exemption.** `init` is the only sub-command exempt from the Mandatory Graphify Pre-Check in `SKILL.md`: on a fresh folder no `graphify-out/` exists yet. Step 7 below installs graphify so every subsequent sub-command can enforce the pre-check.
+
 ## Usage
 
 ```

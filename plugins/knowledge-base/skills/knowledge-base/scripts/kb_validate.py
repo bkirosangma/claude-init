@@ -44,6 +44,8 @@ SLATE_BG     = '#f1f5f9'
 SLATE_BORDER = '#cbd5e1'
 SLATE_COLOR  = '#64748b'
 VALID_CURVES = {'orthogonal', 'curved', 'straight', 'bezier'}
+VALID_ATTACHED_TYPES = {'root', 'node', 'connection', 'flow', 'type', 'tab', 'tab-section', 'tab-track'}
+RE_HTTP_URL = re.compile(r'^https?://', re.IGNORECASE)
 
 
 def _kebab(s: str) -> str:
@@ -60,6 +62,79 @@ def _finite(v) -> bool:
 
 def _valid_color(c) -> bool:
     return isinstance(c, str) and (RE_HEX6.match(c) or RE_HEX3.match(c))
+
+
+def _validate_sources(r: 'Result', section: str, owner: str, srcs) -> None:
+    """Validate a `sources` array on an entity. Empty/absent is fine.
+
+    Adds diagnostics to `r` for:
+      - sources[].url that doesn't parse as http(s):// (error, fixable: drop entry)
+      - sources[].title that is an empty string (warning, fixable: omit field)
+    `owner` is a label like 'nodes[3]' used to scope the message.
+    """
+    if srcs is None:
+        return
+    if not isinstance(srcs, list):
+        r.add('error', section, f'{owner}: sources must be an array')
+        return
+    for j, s in enumerate(srcs):
+        if not isinstance(s, dict):
+            r.add('error', section, f'{owner}: sources[{j}] is not an object — would drop on --fix', True)
+            continue
+        url = s.get('url')
+        if not isinstance(url, str) or not RE_HTTP_URL.match(url.strip()):
+            r.add('error', section,
+                  f'{owner}: sources[{j}].url {url!r} not http(s):// — would drop entry on --fix', True)
+        title = s.get('title')
+        if title is not None and isinstance(title, str) and title == '':
+            r.add('warning', section,
+                  f'{owner}: sources[{j}].title is empty — would omit on --fix', True)
+
+
+def _fix_sources(srcs):
+    """Return a cleaned `sources` list (or None when nothing remains).
+
+    Mirrors the diagnostics emitted by `_validate_sources`:
+      - drops non-dict entries entirely.
+      - drops entries whose `url` does not parse as `http(s)://` (after a
+        whitespace strip).
+      - normalises empty `title` to omitted (drops the key, not the entry).
+    Returns the cleaned list, OR `None` when the input was None / not a list /
+    became empty after filtering — caller decides whether to remove the key.
+    """
+    if not isinstance(srcs, list):
+        return None
+    cleaned: list = []
+    for s in srcs:
+        if not isinstance(s, dict):
+            continue
+        url = s.get('url')
+        if not isinstance(url, str) or not RE_HTTP_URL.match(url.strip()):
+            continue
+        entry = dict(s)
+        title = entry.get('title')
+        if isinstance(title, str) and title == '':
+            entry.pop('title', None)
+        cleaned.append(entry)
+    return cleaned if cleaned else None
+
+
+def _validate_attached_to(r: 'Result', section: str, owner: str, attached) -> None:
+    """Validate a `documents[].attachedTo` array. Empty/absent is fine."""
+    if attached is None:
+        return
+    if not isinstance(attached, list):
+        r.add('error', section, f'{owner}: attachedTo must be an array')
+        return
+    for j, a in enumerate(attached):
+        if not isinstance(a, dict):
+            r.add('error', section, f'{owner}: attachedTo[{j}] is not an object — would drop on --fix', True)
+            continue
+        t = a.get('type')
+        if t not in VALID_ATTACHED_TYPES:
+            allowed = ' | '.join(sorted(VALID_ATTACHED_TYPES))
+            r.add('error', section,
+                  f'{owner}: attachedTo[{j}].type {t!r} not one of {{{allowed}}} — would drop entry on --fix', True)
 
 
 # ── Diagnostic ─────────────────────────────────────────────────────────────────
@@ -208,6 +283,8 @@ def validate(data: dict, path: str = '') -> Result:
             elif eff not in valid_lids:
                 r.add('error', 'nodes', f'nodes[{i}]: layer "{nl}" does not exist — would clear under --fix', True)
 
+        _validate_sources(r, 'nodes', f'nodes[{i}]', N.get('sources'))
+
     # ── Connections
     seen_cids: dict[str, int] = {}
     valid_cids: set[str] = set()
@@ -254,6 +331,8 @@ def validate(data: dict, path: str = '') -> Result:
         if lp is not None and (not isinstance(lp, (int, float)) or not 0 <= lp <= 1):
             r.add('warning', 'connections', f'connections[{i}]: labelPosition {lp!r} out of [0,1] — would clamp', True)
 
+        _validate_sources(r, 'connections', f'connections[{i}]', C.get('sources'))
+
     # ── Flows
     seen_fids: set[str] = set()
 
@@ -288,6 +367,49 @@ def validate(data: dict, path: str = '') -> Result:
             else:
                 eff_cids.append(eff)
 
+        # Compute flow-member node set (nodes appearing as from/to of one of the flow's connections)
+        flow_members: set[str] = set()
+        for C in connections:
+            if isinstance(C, dict):
+                cid_eff = r.id_remap.get(C.get('id', ''), C.get('id', ''))
+                if cid_eff in eff_cids:
+                    fr = r.id_remap.get(C.get('from', ''), C.get('from', ''))
+                    to = r.id_remap.get(C.get('to',   ''), C.get('to',   ''))
+                    if fr: flow_members.add(fr)
+                    if to: flow_members.add(to)
+
+        # nodeOrders — keys must be flow members; values must be integers
+        nord = F.get('nodeOrders')
+        if nord is not None:
+            if not isinstance(nord, dict) or isinstance(nord, list):
+                r.add('error', 'flows', f'flows[{i}]: nodeOrders must be an object — would reset on --fix', True)
+            else:
+                for k, v in nord.items():
+                    eff_k = r.id_remap.get(k, k)
+                    if eff_k not in flow_members:
+                        r.add('error', 'flows',
+                              f'flows[{i}]: nodeOrders key "{k}" is not a flow member — would drop on --fix', True)
+                    if isinstance(v, bool) or not isinstance(v, int):
+                        # bool is subclass of int in Python — exclude it explicitly
+                        r.add('error', 'flows',
+                              f'flows[{i}]: nodeOrders["{k}"] = {v!r} is not an integer — would drop on --fix', True)
+
+        # startNodeIds / endNodeIds — entries must be flow members
+        for ord_field in ('startNodeIds', 'endNodeIds'):
+            ids = F.get(ord_field)
+            if ids is None:
+                continue
+            if not isinstance(ids, list):
+                r.add('error', 'flows', f'flows[{i}]: {ord_field} must be an array — would reset on --fix', True)
+                continue
+            for k in ids:
+                eff_k = r.id_remap.get(k, k)
+                if eff_k not in flow_members:
+                    r.add('error', 'flows',
+                          f'flows[{i}]: {ord_field} contains "{k}" which is not a flow member — would drop on --fix', True)
+
+        _validate_sources(r, 'flows', f'flows[{i}]', F.get('sources'))
+
         # Contiguity
         if len(eff_cids) > 1:
             conn_ep: dict[str, tuple] = {}
@@ -320,6 +442,17 @@ def validate(data: dict, path: str = '') -> Result:
                 r.add('error', 'flows',
                       f'flows[{i}] "{F.get("name", "")}": not contiguous ({len(comps)} components: {parts}) — would split under --fix',
                       True)
+
+    # ── Documents (DocumentMeta entries persisted inside the diagram JSON)
+    docs = data.get('documents', []) if isinstance(data.get('documents'), list) else []
+    # Top-level data.sources — same shape as per-entity arrays.
+    _validate_sources(r, 'schema', 'top-level', data.get('sources'))
+
+    for i, D in enumerate(docs):
+        if not isinstance(D, dict):
+            r.add('error', 'documents', f'documents[{i}] is not an object'); continue
+        _validate_attached_to(r, 'documents', f'documents[{i}]', D.get('attachedTo'))
+        _validate_sources(r, 'documents', f'documents[{i}]', D.get('sources'))
 
     # ── Semantic checks (info-level)
     used_layers = {r.id_remap.get(N.get('layer', ''), N.get('layer', ''))
@@ -492,9 +625,33 @@ def fix(data: dict, basename: str = 'diagram') -> dict:
         fixed_flows.append(F)
     d['flows'] = fixed_flows
 
+    # Sources cleanup — drop entries with bad URLs, omit empty titles. Runs
+    # at every scope (top-level + per-entity); a list that becomes empty (or
+    # was malformed to start with) is removed entirely.
+    def _apply_sources_fix(owner):
+        if 'sources' not in owner:
+            return
+        cleaned = _fix_sources(owner.get('sources'))
+        if cleaned is None:
+            owner.pop('sources', None)
+        else:
+            owner['sources'] = cleaned
+
+    _apply_sources_fix(d)
+    for N in d['nodes']:
+        if isinstance(N, dict): _apply_sources_fix(N)
+    for C in d['connections']:
+        if isinstance(C, dict): _apply_sources_fix(C)
+    for F in d['flows']:
+        if isinstance(F, dict): _apply_sources_fix(F)
+    if isinstance(d.get('documents'), list):
+        for D in d['documents']:
+            if isinstance(D, dict): _apply_sources_fix(D)
+
     # Canonical key order
     ordered = {k: d[k] for k in ('title', 'layers', 'nodes', 'connections', 'layerManualSizes', 'lineCurve', 'flows') if k in d}
     if 'documents' in d: ordered['documents'] = d['documents']
+    if 'sources' in d: ordered['sources'] = d['sources']
     for k, v in d.items():
         if k not in ordered: ordered[k] = v
     return ordered
@@ -510,6 +667,7 @@ def report(path: str, r: Result) -> str:
         ('nodes',       'Nodes'),
         ('connections', 'Connections'),
         ('flows',       'Flows'),
+        ('documents',   'Documents'),
         ('semantic',    'Semantic'),
     ]
     for key, label in sections:

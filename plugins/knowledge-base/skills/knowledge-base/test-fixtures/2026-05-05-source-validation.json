@@ -1,0 +1,70 @@
+{
+  "title": "Source Validation Fixture",
+  "layers": [
+    {
+      "id": "ly-app",
+      "title": "APPLICATION",
+      "bg": "#f5f3ff",
+      "border": "#c4b5fd"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "el-bad-sources",
+      "label": "Node With Bad Sources",
+      "icon": "AlertTriangle",
+      "x": 100,
+      "y": 100,
+      "w": 210,
+      "layer": "ly-app",
+      "sources": [
+        { "url": "javascript:alert(1)", "title": "XSS attempt" },
+        { "url": "not-a-url", "title": "Malformed" },
+        { "url": "", "title": "Empty string" },
+        { "url": "https://example.com/ok", "title": "Valid sibling" }
+      ]
+    },
+    {
+      "id": "el-target",
+      "label": "Target",
+      "icon": "Database",
+      "x": 500,
+      "y": 100,
+      "w": 210,
+      "layer": "ly-app"
+    }
+  ],
+  "connections": [
+    {
+      "id": "dl-1",
+      "from": "el-bad-sources",
+      "to": "el-target",
+      "fromAnchor": "right-1",
+      "toAnchor": "left-1",
+      "color": "#64748b",
+      "label": "calls",
+      "labelPosition": 0.5,
+      "sources": [
+        { "url": "data:text/html,<script>alert(1)</script>", "title": "data URI" }
+      ]
+    }
+  ],
+  "layerManualSizes": {},
+  "lineCurve": "bezier",
+  "flows": [
+    {
+      "id": "flow-bad-titles",
+      "name": "Flow With Empty Title",
+      "connectionIds": ["dl-1"],
+      "sources": [
+        { "url": "https://valid.example.com", "title": "" }
+      ]
+    }
+  ],
+  "sources": [
+    { "url": "javascript:alert(1)", "title": "Top-level JS scheme" },
+    { "url": "not-a-url", "title": "Top-level malformed" },
+    { "url": "", "title": "Top-level empty" },
+    { "url": "https://example.org/safe", "title": "Top-level valid" }
+  ]
+}

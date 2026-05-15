@@ -138,6 +138,28 @@ Flows are named groupings of contiguous connections that represent end-to-end da
 
 **Ordering**: List `connectionIds` in traversal order (source -> destination) for logical readability.
 
+Here is a more complete example with the optional flow-ordering fields (`nodeOrders`, `startNodeIds`, `endNodeIds`) filled in for a sequential login flow:
+
+```json
+{
+  "id": "flow-login",
+  "name": "Login Flow",
+  "connectionIds": ["dl-1", "dl-2", "dl-3", "dl-4", "dl-5", "dl-6"],
+  "nodeOrders": {
+    "el-browser": 1,
+    "el-api-gateway": 2,
+    "el-auth-service": 3,
+    "el-token-mint": 4,
+    "el-session-db": 5,
+    "el-browser-redirected": 6
+  },
+  "startNodeIds": ["el-browser"],
+  "endNodeIds": ["el-session-db"]
+}
+```
+
+Each node has a unique order — this is a strictly sequential pipeline. The browser is the single entry point; the session-db write is the terminal step. The redirected browser node is part of the flow but not the end (the end is the persistence step that completes the login).
+
 ## Layer Conventions
 
 | Layer Category | Purpose | Background | Border |

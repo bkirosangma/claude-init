@@ -26,10 +26,41 @@ For music-domain files (`.svg`, `.mid`/`.midi`, music documents, music diagrams)
 | `.json` (with `--lint-music`) | `kb_validate_music.py` | Layer/node/connection cross-references |
 | other | — | skipped with `ℹ` notice |
 
+### Rules
+
+| Rule | Severity | Auto-fix? |
+|---|---|---|
+| Every `sources[].url` parses as `http(s)://`. Other schemes (`javascript:`, `data:`, `file:`) → error. | Error | Remove the offending entry on `--fix`. |
+| `sources[].title` is a string or absent. Empty string → normalise to omitted on `--fix`. | Warning | Yes |
+| `flows[].nodeOrders` keys are flow members (appear as `from`/`to` of one of the flow's `connectionIds`). | Error | Remove orphan keys on `--fix`. |
+| `flows[].startNodeIds` / `endNodeIds` entries are flow members. | Error | Remove orphans on `--fix`. |
+| `flows[].nodeOrders` values are integers. | Error | Drop non-integers on `--fix`. |
+| Empty `nodeOrders` / `startNodeIds` / `endNodeIds` / `sources` is **not** an error — these fields are optional clarity aids. | n/a | n/a |
+| `attachedTo[].type` is one of the allowed values. | Error | Drop entry on `--fix`. |
+| Document frontmatter `sources:` uses block-list syntax (inline `sources: [{...}]` silently dropped by the parser — block-list only). | Warning | Yes — `kb_transform.py` rewrites inline → canonical block-list. |
+
+The allowed `attachedTo[].type` values are: `root | node | connection | flow | type | tab | tab-section | tab-track`.
+
 ## Inputs
 
 - **path** (string, required): file path or glob from the dispatcher.
 - **fix** (boolean): true if `--fix` was in the args.
+
+## Step 0: Mandatory Graphify Pre-Check (Pattern Surface)
+
+Before running the validator, run the **Mandatory Graphify Pre-Check** defined in `SKILL.md` against the target path(s). This is a **pattern-surface step**, not a gate — `validate` always proceeds.
+
+Use it to identify siblings that share structural patterns with the target so the user knows the validation findings may apply more broadly:
+
+- **STRONG match** (a sibling diagram covers the same topic) → surface it once:
+
+  > Note: `<sibling-path>` covers the same topic as `<target>`. Any structural issues reported below may also exist there.
+
+- **ADJACENT matches** (siblings in the same cluster / community) → keep them in `gatheredContext.adjacentMatches`. If the validator reports a fixable issue and `--fix` is on, end the report with: *"The same fix may apply to: [adjacent paths]. Re-run `/kb validate <path> --fix` on each, or scope by glob."*
+
+- **NONE** → continue silently.
+
+The pre-check is skipped only when no vault is detected or no graphify index exists (SKILL.md emits the standard notice).
 
 ## Step 1: Run the validator script
 
