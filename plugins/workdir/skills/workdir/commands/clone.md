@@ -14,9 +14,23 @@ Extract:
 - `REPO_ARG` — the URL or `owner/repo` shorthand (everything except the `--group` flag)
 - `MANUAL_GROUP` — value after `--group` (empty if not provided)
 
-Detect the workspace root and provider:
+Detect the workspace root and provider. Walk up from `$(pwd)` to find a `.workdir/` (or
+legacy `.init-workdir/`) marker — like git locates `.git/`. Refuses if none found, so a clone
+from an unmanaged sub-directory doesn't silently treat the wrong place as the workspace.
+
 ```bash
-WORKDIR=$(pwd)
+ORIG_PWD=$(pwd)
+WORKDIR="$ORIG_PWD"
+while [ "$WORKDIR" != "/" ] && [ ! -d "$WORKDIR/.workdir" ] && [ ! -d "$WORKDIR/.init-workdir" ]; do
+  WORKDIR=$(dirname "$WORKDIR")
+done
+if [ "$WORKDIR" = "/" ]; then
+  echo "ERROR: no .workdir/ marker found in any parent of $ORIG_PWD"
+  echo "Run /workdir init <github|gitlab> first to provision a workspace."
+  exit 1
+fi
+[ "$WORKDIR" != "$ORIG_PWD" ] && echo "Detected workdir: $WORKDIR (invoked from $ORIG_PWD)"
+
 PROVIDER=$(grep "^Provider:" "$WORKDIR/CLAUDE.md" 2>/dev/null | awk '{print $2}')
 CLI=$(grep "^CLI:" "$WORKDIR/CLAUDE.md" 2>/dev/null | awk '{print $2}')
 ```

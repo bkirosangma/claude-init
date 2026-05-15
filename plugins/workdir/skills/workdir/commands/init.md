@@ -76,7 +76,19 @@ After they confirm it's done, verify with `auth status` again before continuing.
 ## Step 3 — Capture Working Directory & Detect Prior Init
 
 ```bash
-WORKDIR=$(pwd)
+# If invoked from inside an existing managed workspace, walk up to its root so we re-init the
+# correct directory. If no `.workdir/` (or legacy `.init-workdir/`) marker is found anywhere up
+# the tree, fall back to $(pwd) — this is the fresh-init case.
+ORIG_PWD=$(pwd)
+WORKDIR="$ORIG_PWD"
+while [ "$WORKDIR" != "/" ] && [ ! -d "$WORKDIR/.workdir" ] && [ ! -d "$WORKDIR/.init-workdir" ]; do
+  WORKDIR=$(dirname "$WORKDIR")
+done
+if [ "$WORKDIR" = "/" ]; then
+  WORKDIR="$ORIG_PWD"   # fresh init at cwd
+else
+  [ "$WORKDIR" != "$ORIG_PWD" ] && echo "Detected existing workdir: $WORKDIR (invoked from $ORIG_PWD)"
+fi
 WORKDIR_BASENAME=$(basename "$WORKDIR")
 CURRENT_VERSION=$(awk '/^version:/{print $2; exit}' ~/.claude/skills/workdir/SKILL.md)
 

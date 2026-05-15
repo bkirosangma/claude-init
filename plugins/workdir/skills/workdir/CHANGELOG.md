@@ -6,6 +6,16 @@ newest-first.
 
 Format: `## <version> — <YYYY-MM-DD>` followed by a bulleted list of changes.
 
+## 2.1.1 — 2026-05-15
+- `pull`, `update`, `clone`, and `init` now walk up from `$(pwd)` to locate the workspace
+  root, like `git` walks up to find `.git/`. Looks for `.workdir/` or legacy `.init-workdir/`
+  as the marker
+- `pull`, `update`, `clone` refuse to run if no marker is found anywhere up the tree —
+  prevents accidental scans of `~/` or other unrelated directories. `init` falls back to
+  `$(pwd)` in the same case (the fresh-init scenario)
+- When invoked from a sub-directory of a managed workspace, the command prints
+  `Detected workdir: <root> (invoked from <pwd>)` so the chosen workspace is never ambiguous
+
 ## 2.1.0 — 2026-05-15
 - New `pull` subcommand. `/workdir pull` fetches every repo in the workspace in parallel, then
   categorises each into one of 8 buckets (up-to-date, ff-pull, ahead-only, diverged, dirty,

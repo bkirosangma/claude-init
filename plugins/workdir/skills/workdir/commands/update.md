@@ -12,7 +12,20 @@ github` or `/workdir init gitlab`.
 ## Step 1 — Verify Workspace Exists
 
 ```bash
-WORKDIR=$(pwd)
+# Walk up from $(pwd) to locate the managed workspace. Refuses to run if no `.workdir/` (or
+# legacy `.init-workdir/`) marker is found anywhere up the tree — prevents accidentally
+# treating a random directory as the workspace.
+ORIG_PWD=$(pwd)
+WORKDIR="$ORIG_PWD"
+while [ "$WORKDIR" != "/" ] && [ ! -d "$WORKDIR/.workdir" ] && [ ! -d "$WORKDIR/.init-workdir" ]; do
+  WORKDIR=$(dirname "$WORKDIR")
+done
+if [ "$WORKDIR" = "/" ]; then
+  echo "ERROR: no .workdir/ marker found in any parent of $ORIG_PWD"
+  echo "Run /workdir init <github|gitlab> first to provision a workspace."
+  exit 1
+fi
+[ "$WORKDIR" != "$ORIG_PWD" ] && echo "Detected workdir: $WORKDIR (invoked from $ORIG_PWD)"
 WORKDIR_BASENAME=$(basename "$WORKDIR")
 CURRENT_VERSION=$(awk '/^version:/{print $2; exit}' ~/.claude/skills/workdir/SKILL.md)
 

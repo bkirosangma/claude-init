@@ -15,7 +15,22 @@ set -o pipefail
 # Deliberately NO `set -e` (per-repo failures must be isolated) and NO `set -u` (empty assoc
 # arrays + optional config keys cause spurious unbound-variable errors that would mask real bugs).
 
-WORKDIR=$(pwd)
+# Walk up from $(pwd) to locate the managed workspace (the directory containing a `.workdir/`
+# or legacy `.init-workdir/` marker). Mirrors how git locates `.git/`. Refuses to run if no
+# marker exists anywhere up the tree — prevents accidental scans of `~/` or unrelated dirs.
+ORIG_PWD=$(pwd)
+WORKDIR="$ORIG_PWD"
+while [ "$WORKDIR" != "/" ] && [ ! -d "$WORKDIR/.workdir" ] && [ ! -d "$WORKDIR/.init-workdir" ]; do
+  WORKDIR=$(dirname "$WORKDIR")
+done
+if [ "$WORKDIR" = "/" ]; then
+  echo "ERROR: no .workdir/ marker found in any parent of $ORIG_PWD" >&2
+  echo "       Run /workdir init <github|gitlab> from your workspace root first," >&2
+  echo "       or cd into a managed workspace before invoking /workdir pull." >&2
+  exit 1
+fi
+[ "$WORKDIR" != "$ORIG_PWD" ] && echo "Detected workdir: $WORKDIR (invoked from $ORIG_PWD)"
+
 STATE_DIR="$WORKDIR/.workdir"
 PLAN_FILE="$STATE_DIR/.pull-plan.tsv"
 SUMMARY_FILE="$STATE_DIR/.pull-summary.tsv"
@@ -31,7 +46,6 @@ PARALLELISM=8
 # Auto-migrate legacy state dir (v1 .init-workdir/ → v2 .workdir/)
 if [ -d "$WORKDIR/.init-workdir" ] && [ ! -d "$WORKDIR/.workdir" ]; then
   mv "$WORKDIR/.init-workdir" "$WORKDIR/.workdir"
-  STATE_DIR="$WORKDIR/.workdir"
 fi
 
 # Read config if present
