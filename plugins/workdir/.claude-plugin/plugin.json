@@ -1,5 +1,5 @@
 {
-  "name": "init-workdir",
+  "name": "workdir",
   "description": "Initialize and maintain a multi-repo workspace with compound intelligence (graphify + claude-mem + MEMORY.md), workspace-scoped gitconfig, ignore files, knowledge vault, coding standards, claude-mem worker, ui-ux-pro-max skill, group-organized repo cloning with host detection, cross-repo graph rebuild on clone, idempotent re-init via per-step probes, version-tracked manifest with changelog diff on update, and portable MEMORY.md seed bootstrap.",
   "author": {
     "name": "Banchan Kiro A Sangma",

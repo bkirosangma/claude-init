@@ -36,11 +36,11 @@ The block is **session-deduped** (so the same context isn't injected twice in on
 
 ## Installation
 
-Bundled with `init-workdir`. Copied to `~/.claude/skills/compound-dispatch/` by the bootstrap
+Bundled with `workdir`. Copied to `~/.claude/skills/compound-dispatch/` by the bootstrap
 subcommand:
 
 ```
-/init-workdir bootstrap
+/workdir bootstrap
 ```
 
 Or standalone:
