@@ -47,3 +47,19 @@ Domain-specific layout guidance that supplements the universal spacing rules.
 - **Density:** _sparse | moderate | dense_
 - **Emphasis:** _what the eye should be drawn to first_
 - **Special rules:** _any domain-specific layout considerations_
+
+## Ordering conventions
+
+Describe how flows in this archetype are ordered:
+- Are flows ordered (process / pipeline / lifecycle) or unordered (topology / ecosystem)?
+- What does a "step" mean in this domain?
+- When should multiple nodes share an order (parallel steps)?
+- When are condition nodes ordered vs unordered?
+
+## Sourcing conventions
+
+Describe what canonical online sources fit this archetype's domain:
+- For protocol diagrams: link the relevant RFC.
+- For algorithms: link the original paper.
+- For organisational architecture: link the team's RFC / ADR / public docs.
+- For learning roadmaps: link the canonical curriculum or syllabus the roadmap is grounded in.

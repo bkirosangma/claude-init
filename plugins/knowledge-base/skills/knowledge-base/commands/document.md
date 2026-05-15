@@ -19,6 +19,17 @@ The dispatcher passes:
 - **vaultConfig** — parsed `.archdesigner/config.json` (or `null`)
 - **gatheredContext** — compound intelligence context block assembled by SKILL.md
 
+## Step 0: Mandatory Graphify Pre-Check
+
+Before parsing arguments, before structural planning, before any LLM generation, run the **Mandatory Graphify Pre-Check** defined in `SKILL.md` against `<topic>`. SKILL.md owns the protocol; do not re-implement it here.
+
+Outcomes:
+- **STRONG match found** → stop. Surface the matching paths to the user via the SKILL.md dialog ("Open / Edit / Generate-new-anyway?") and wait for their choice. Do not generate a duplicate document.
+- **ADJACENT matches** → continue. Carry the matched paths in `gatheredContext.adjacentMatches` and weave them into the document's "Related" section in Step 5.
+- **NONE** → continue.
+
+The pre-check is skipped only when no vault is detected or no graphify index exists (SKILL.md emits the standard notice in either case).
+
 ## Step 1: Parse Arguments
 
 1. The **topic** string is the subject of the document. It may be multiple words (e.g., `"Event sourcing patterns"`).
@@ -74,6 +85,18 @@ Parse the 3-token output: `<name> <subtype> <path>`.
 - If `subtype` is `-` (single-file archetype): treat as no-match and skip.
 
 When a template is selected, the document MUST include the shared frontmatter and closing sections defined in the template. The body sections follow the template's order. Substantive prose still applies — the template defines structure, not content.
+
+## Step 1.5: Gather Sources
+
+Sources are mandatory. Use WebSearch to find 2–4 canonical online resources for the topic. Prefer the topic's primary literature over derivative blog posts. Record as:
+
+```yaml
+sources:
+  - url: https://...
+    title: Optional display label
+```
+
+These go into the document's YAML frontmatter (top of file, between `---` delimiters).
 
 ## Step 2: Detect Vault and Gather Context
 
@@ -137,6 +160,12 @@ Write a comprehensive, well-structured markdown document. This is the core outpu
 ### Document Structure
 
 ```markdown
+---
+sources:
+  - url: https://...
+    title: Optional display label
+---
+
 # <Topic Title>
 
 <Opening paragraph: 1-3 sentences establishing what this topic is and why it matters.>
@@ -173,7 +202,7 @@ Write a comprehensive, well-structured markdown document. This is the core outpu
 6. **Code examples** where relevant — use fenced code blocks with language hints
 7. **Diagrams** — if a related diagram exists in the vault, reference it: `See [[diagram-name.json]] for a visual overview.`
 8. **Cross-references** — if related documents exist in the vault, include `[[other-doc]]` wiki-links in the body text or in a "Related" section at the end
-9. **No YAML frontmatter** — the document is plain markdown. Metadata is tracked in the topic registry, not in the file itself
+9. **YAML frontmatter for sources** — the document begins with a `---` frontmatter block carrying the `sources` list gathered in Step 1.5. Use **block-list syntax only** (each entry on its own line, prefixed with `- url:`); inline form (`sources: [{...}]`) is silently treated as an unknown key by the app's frontmatter parser. Other metadata is tracked in the topic registry, not in the file itself
 
 ### Section Selection Heuristics
 

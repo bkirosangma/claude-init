@@ -31,6 +31,17 @@ They are linked together: the document contains a wiki-link to the diagram, and 
 
 ---
 
+## Step 0: Mandatory Graphify Pre-Check
+
+Before parsing arguments, before placement selection, before any LLM generation of either the document or the diagram, run the **Mandatory Graphify Pre-Check** defined in `SKILL.md` against `<topic>`. SKILL.md owns the protocol; do not re-implement it here.
+
+Outcomes:
+- **STRONG match found** → stop. Surface the matching paths to the user via the SKILL.md dialog ("Open / Edit / Generate-new-anyway?") and wait for their choice. Do not generate a duplicate document+diagram pair.
+- **ADJACENT matches** → continue. Carry the matched paths in `gatheredContext.adjacentMatches`; weave them into the document's "Related" section AND the diagram's `documents.attached` list.
+- **NONE** → continue.
+
+The pre-check is skipped only when no vault is detected or no graphify index exists (SKILL.md emits the standard notice in either case).
+
 ## Step 1: Parse Arguments
 
 1. The **topic** string is the subject of both the document and diagram. It may be multiple words (e.g., `"Microservices authentication flow"`).

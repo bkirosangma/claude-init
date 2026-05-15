@@ -17,6 +17,17 @@ The `<topic>` is a free-form string describing what to diagram (e.g., "Kubernete
 - **vault config** (object | null): Parsed `.archdesigner/config.json` if in a vault.
 - **gathered context** (object): The compound intelligence context assembled by SKILL.md before dispatching.
 
+## Step 0: Mandatory Graphify Pre-Check
+
+Before doing anything else (before archetype selection, before structural planning, before any LLM generation), run the **Mandatory Graphify Pre-Check** defined in `SKILL.md` against `<topic>`. SKILL.md owns the protocol; do not re-implement it here.
+
+Outcomes:
+- **STRONG match found** → stop. Surface the matching paths to the user via the SKILL.md dialog ("Open / Edit / Generate-new-anyway?") and wait for their choice. Do not generate a duplicate diagram.
+- **ADJACENT matches** → continue. Carry the matched paths in `gatheredContext.adjacentMatches`; weave them into the diagram's `documents.attached` list AND the "Related" section of the explanation doc you write in Step 4.
+- **NONE** → continue.
+
+The pre-check is skipped only when no vault is detected or no graphify index exists (SKILL.md emits the standard notice). Step 1c below still runs — it is a secondary, layout-oriented graphify query, not a duplicate of the pre-check.
+
 ## Step 1: Detect Vault and Gather Context
 
 Vault detection is handled by SKILL.md before this command runs. Use the passed-in vault root and gathered context. Additionally, load vault-specific memory files:
@@ -38,6 +49,22 @@ If a vault is detected, check for `<vault-root>/memory/topic-registry.md`. If it
 Beyond the context SKILL.md already gathered:
 - Query graphify for the topic if a vault graph exists: look for related nodes, communities, and structural patterns that could inform the diagram layout.
 - Query claude-mem for past diagram sessions: search for observations about prior diagrams, user corrections to layouts or icon choices, and archetype adaptations. Use MCP tool `mcp__plugin_claude-mem_mcp-search__search` with `query: "diagram <topic>"`.
+
+## Step 1.5: Gather Sources
+
+Sources are **mandatory** for skill-generated diagrams. Without them the user cannot verify what the diagram is grounded in.
+
+1. **Top-level sources**: use WebSearch to find 2–4 canonical online resources for the topic. Prefer:
+   - For protocols: the relevant RFC or W3C spec.
+   - For algorithms: the original paper or its archive page.
+   - For software architectures: the official documentation, an architectural blog post by the maintainers, or the source-code-of-record (e.g. GitHub repo).
+   - Avoid: commercial blog posts that paraphrase canonical sources without adding insight.
+2. **Per-entity sources** (encouraged when feasible): for any node / connection / flow whose concept has its own canonical source distinct from the top-level topic, search and attach. For nodes representing a specific service-or-protocol (e.g. an "OAuth Service" node), find that protocol's RFC.
+3. **Record** the sources for use in Step 3b. Format each as:
+   ```json
+   { "url": "https://datatracker.ietf.org/doc/html/rfc6749", "title": "RFC 6749 — OAuth 2.0" }
+   ```
+4. **Minimum**: at least one top-level `sources` entry MUST be present in the final JSON. Per-entity sources are encouraged but not required.
 
 ## Step 2: Select Archetype
 
@@ -142,6 +169,36 @@ Execute these steps in order:
     - Verify the contiguity constraint: each connection shares at least one node with another connection in the same flow
     - Draft a brief **flow explanation** (3–5 sentences) covering: what triggers this flow, the key steps across nodes, and the outcome. Store this text for Step 3e.
 
+#### Flow ordering, start, and end (optional but encouraged)
+
+The new `FlowDef` shape supports three optional fields that turn a flow's connections into a numbered traversal:
+
+```json
+{
+  "id": "flow-...",
+  "name": "...",
+  "connectionIds": [...],
+  "category": "...",
+  "nodeOrders": { "el-browser": 1, "el-api-gateway": 2, "el-auth-service": 3 },
+  "startNodeIds": ["el-browser"],
+  "endNodeIds": ["el-session-db"]
+}
+```
+
+- **`nodeOrders`** — Map of node ID → integer step. Use when the flow has a well-defined sequence (request flows, OAuth grants, learning paths). Multiple nodes may share an order number to indicate parallel steps. Omit when ordering would mislead (highly branching state machines, freely-traversable architectures).
+- **`startNodeIds`** — Array of node IDs that are valid entry points to the flow. For roadmaps, all "Foundations" topics are starts.
+- **`endNodeIds`** — Array of node IDs that are valid exit points / outcomes.
+
+For each generated flow, decide based on archetype:
+
+| Archetype | Default behaviour |
+|---|---|
+| Roadmaps | Always emit. Lowest-stage topics → `startNodeIds`. Highest-stage topics → `endNodeIds`. `nodeOrders` reflects recommended traversal sequence. |
+| Software architecture | Emit when the flow is a request lifecycle (e.g. login). Skip when the flow is a topology/relationship diagram. |
+| Other | Emit when the diagram represents a process; skip otherwise. |
+
+Validate after emission: every `nodeOrders` key, `startNodeIds` entry, and `endNodeIds` entry MUST appear as the `from` or `to` of at least one connection in the flow's `connectionIds`. If a candidate node ID does not satisfy this, drop it from the field rather than emit an unreachable reference.
+
 ### 3b. JSON Output
 
 Produce the diagram as a JSON file conforming to the schema defined in the software-architecture archetype:
@@ -149,6 +206,7 @@ Produce the diagram as a JSON file conforming to the schema defined in the softw
 ```json
 {
   "title": "<Diagram Title>",
+  "sources": [SourceLink],
   "layers": [LayerDef],
   "nodes": [SerializedNodeData],
   "connections": [Connection],
@@ -172,48 +230,113 @@ Produce the diagram as a JSON file conforming to the schema defined in the softw
 
 The `documents` array tells the app which documents are pre-attached to which flows. When the user opens the diagram, attachments are restored automatically. **Only include entries for documents that were actually written to disk in Step 3e.**
 
-See the software-architecture archetype for the full schema of LayerDef, SerializedNodeData, Connection, and FlowDef.
-
-### 3e. Flow Explanation Documents
-
-For each flow defined in Step 3a, write a companion Markdown document that explains the flow in prose:
-
-1. **Filename**: `<flow-descriptive-id>.md` (e.g. `flow-authorization-code.md`). Place inside a `flow-descriptions/` subfolder: `<topicFolder>/flow-descriptions/<flow-descriptive-id>.md`. Create the subfolder first: `mkdir -p "<topicFolder>/flow-descriptions/"`.
-
-2. **Generate the tables via script** — after the diagram JSON has been written to disk, run for each flow:
-
-```bash
-TABLES=$(python3 ~/.claude/skills/knowledge-base/scripts/kb_flow_tables.py \
-  --diagram "<topic-folder>/<topic-slug>.json" \
-  --flow "<flow-id>")
-```
-
-3. **Content template** — write only the prose paragraph; insert script output for the tables:
-
-```markdown
-# <Flow Name>
-
-<The 3–5 sentence explanation drafted in Step 3a: trigger, key steps, outcome.>
-
-<TABLES — paste kb_flow_tables.py output here verbatim>
-
-## Further Reading
-
-For full context, see [[<topic-slug>.md]].
-```
-
-4. **Register in `documents[]`**: After writing each file, add a `DocumentMeta` entry to the `documents` array in the diagram JSON:
+`SourceLink` shape (one per entry in any `sources` array):
 
 ```json
 {
-  "id": "<topic-slug>-<flow-descriptive-id>",
-  "filename": "<collection-path>/<topic-slug>/flow-descriptions/<flow-descriptive-id>.md",
-  "title": "<Flow Name> — Explanation",
+  "url": "https://example.com/...",
+  "title": "Optional display label"
+}
+```
+
+Notes:
+- Omit `title` rather than emit `""` — the app falls back to the URL host when `title` is absent.
+- Per-entity sources nest the same shape inside any `LayerDef`, `SerializedNodeData`, `Connection`, or `FlowDef` (each accepts an optional `sources` array).
+
+`FlowDef` shape (one entry per flow in the `flows` array):
+
+```json
+{
+  "id": "flow-<descriptive-short-id>",
+  "name": "Human Readable Flow Name",
+  "category": "Optional Category",
+  "connectionIds": ["dl-conn1", "dl-conn2", "dl-conn3"],
+  "sources": [SourceLink],
+  "nodeOrders": { "<node-id>": 1 },
+  "startNodeIds": ["<node-id>"],
+  "endNodeIds": ["<node-id>"]
+}
+```
+
+- `nodeOrders` — optional map of node ID → integer traversal step (see Step 3a "Flow ordering, start, and end").
+- `startNodeIds` — optional array of node IDs that are valid entry points to the flow.
+- `endNodeIds` — optional array of node IDs that are valid exit points / outcomes.
+
+See the software-architecture archetype for the full schema of LayerDef, SerializedNodeData, Connection, and FlowDef.
+
+### 3e. Flow primary documents (and optional extension docs)
+
+For each flow defined in Step 3a, write a **rich primary document** that explains the flow as a self-contained piece of writing — not a hub, not a stub. The 3–5 sentence + table format used previously is **deprecated**.
+
+#### 3e.1 Primary doc
+
+1. **Filename**: `<topicFolder>/flow-descriptions/<flow-id>.md`. Create the folder with `mkdir -p` first.
+
+2. **Length**: aim for 1500–3000 words. Do not pad — if the flow honestly fits in 800 words, write 800. Padding hurts skim-readability.
+
+3. **Structure** (adaptive — let the topic shape the headings, not a rigid taxonomy):
+   - **Overview** — one-paragraph summary of the trigger, the path, and the outcome.
+   - **What happens** — narrative pass through the nodes in flow order. For each node, name it, explain its role in this flow, link to its detailed page or RFC.
+   - **Why this grouping** — why these nodes and connections form a coherent flow (and what's intentionally not in it).
+   - **How connections work** — for each non-trivial connection, explain the protocol, the contract, the failure mode.
+   - **Edge cases** — at least one paragraph on what happens when the flow doesn't go cleanly (timeouts, errors, partial state).
+   - **Cross-references** — wiki-links to related diagrams, related flows, related concept documents.
+
+4. **Wiki-links**:
+   - Use `[[other-doc.md]]` to link to other vault documents.
+   - Use `[[other-doc.md#header]]` when linking to a specific section.
+   - Use `[[other-diagram.json]]` to link to other diagrams.
+
+5. **Auto-generated tables**:
+   - Run `kb_flow_tables.py` as before, but embed the output as an appendix at the end (under "## Appendix: Connection reference") rather than as the body. The table is a reference; the prose is the document.
+
+6. **Sources**: copy the flow's `sources` (if any) and the relevant top-level diagram sources into a YAML frontmatter block:
+
+   ```markdown
+   ---
+   sources:
+     - url: https://datatracker.ietf.org/doc/html/rfc6749
+       title: RFC 6749 — OAuth 2.0
+   ---
+
+   # Flow Name
+
+   ...
+   ```
+
+   Use **block-list syntax only** for `sources:` (each entry on its own line, prefixed with `- url:`). Inline form (`sources: [{...}]`) is silently treated as an unknown key by the app's frontmatter parser and the field will not surface in the document properties panel.
+
+#### 3e.2 Extension docs (conservative, optional)
+
+While drafting the primary, identify any subtopic that:
+
+- Naturally takes 400+ words to explain at appropriate depth.
+- Has its own canonical source distinct from the parent flow.
+- Would dilute the primary if kept inline.
+
+For each such subtopic, generate a sibling extension doc:
+
+- **Filename**: `<topicFolder>/flow-descriptions/<flow-id>/<subtopic-slug>.md`. Create the subfolder with `mkdir -p` first.
+- **Self-contained**: the extension is its own document, not a continuation. It MAY assume the reader has read the primary, but should re-state context briefly.
+- **Wiki-link from primary**: at the relevant section of the primary, insert `[[<flow-id>/<subtopic-slug>.md#overview]]` (anchor optional).
+- **No registration**: only the primary doc is registered in the diagram's `documents[]`. The extension is reachable through wiki-links + the auto-derived backlinks.
+- **Conservative bias**: when in doubt, keep the content inline rather than spawn an extension. Truly deeper dives belong in a fresh `/kb document` or `/kb create` session.
+- **Interactive mode (`-i`)**: surface borderline candidates to the user and ask before writing.
+
+#### 3e.3 Registration
+
+Append a `DocumentMeta` to the diagram JSON's `documents` array for each primary doc:
+
+```json
+{
+  "id": "<topic-slug>-<flow-id>",
+  "filename": "<collection-path>/<topic-slug>/flow-descriptions/<flow-id>.md",
+  "title": "<Flow Name>",
   "attachedTo": [{ "type": "flow", "id": "<flow-id>" }]
 }
 ```
 
-If a diagram has no flows, skip this step (the `documents` key may be omitted from the JSON).
+Extension docs are NOT registered. If a diagram has no flows, skip this step (the `documents` key may be omitted from the JSON).
 
 ### 3c. Output Location
 
@@ -346,8 +469,7 @@ Please open this file in the knowledge-base app and verify:
 4. Labels are readable and don't overlap other elements
 5. All flows are listed in the Architecture Properties panel
 6. Selecting a flow correctly highlights the intended path
-7. Each flow shows its companion explanation document in the Documents section
-   of the Flow Properties panel (pre-attached — no manual linking needed)
+7. Each flow has a companion primary document at `flow-descriptions/<flow-id>.md` registered in the diagram's `documents[]` and pre-attached to the flow. Optional extensions, if any, are wiki-linked from the primary.
 
 If anything needs adjustment, describe the change and I'll update
 the diagram and save the preference for future use.

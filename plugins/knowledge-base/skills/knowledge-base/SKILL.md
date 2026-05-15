@@ -21,7 +21,7 @@ description: >
   "raga clock", "maqam jins", "chord box", "gamelan cipher", "tala wheel".
 argument-hint: <sub-command> [args] — sub-commands: init, diagram, document, create, svg, guitar-tabs, edit, validate, transform
 allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, Agent, WebSearch, WebFetch]
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Knowledge Base
@@ -116,24 +116,85 @@ Before dispatching any sub-command, determine whether we are inside a vault.
 
 The `init` sub-command does NOT require an existing vault (it creates one). Skip the "not found" warning for `init`.
 
-## Compound Intelligence
+## Mandatory Graphify Pre-Check
 
-Before executing any sub-command (after vault detection, before reading the command file), gather context from all available intelligence systems. This context is passed to the sub-command so it can produce higher-quality, non-redundant output.
+**Every sub-command except `init` MUST run this pre-check before generating, mutating, or answering anything.** It exists to prevent redundant content, surface relevant existing work, and warn about cross-references a mutation might break.
 
-### 1. graphify (Structural)
+Skipping it — even when the user's intent looks obvious — is a defect. The user's request frames *what* they want; the pre-check determines whether that work already exists or which existing work it needs to link to.
 
-If a vault is detected and `graphify-out/` exists inside the vault root:
-- Query the vault's knowledge graph for content related to the topic: `/graphify query "<topic>"`
-- Read `graphify-out/GRAPH_REPORT.md` for god nodes and community structure relevant to the topic.
-- Collect: related existing documents, diagrams, cross-references, and structural clusters.
+### When the pre-check is skipped
 
-### 2. claude-mem (Temporal)
+- `init` — there is no graphify index yet on a fresh folder. Exempt.
+- No vault detected (`.archdesigner/config.json` not found within 3 parent levels) — emit a one-line notice: *"No vault detected; skipping graphify pre-check. Existing-content awareness is unavailable for this run."* Then proceed.
+- Vault detected but no `graphify-out/` directory — emit: *"Vault has no graphify index. Run `/graphify .` inside `<vaultRoot>` to enable existing-content awareness."* Then proceed.
+
+In every other case the pre-check runs.
+
+### Pre-Check Protocol
+
+Inputs: `topic` (the user's query / target / file), `vaultRoot`.
+
+1. **Stale-graph guard.** If `graphify-out/` exists, check whether it is older than the newest `*.md` / `*.json` / `*.svg` / `*.alphatex` in the vault:
+
+   ```bash
+   newest=$(find "<vaultRoot>" \( -name '*.md' -o -name '*.json' -o -name '*.svg' -o -name '*.alphatex' \) \
+              -not -path '*/graphify-out/*' -not -path '*/.archdesigner/*' \
+              -newer "<vaultRoot>/graphify-out/GRAPH_REPORT.md" -print -quit 2>/dev/null)
+   if [ -n "$newest" ]; then
+     (cd "<vaultRoot>" && graphify . --update 2>/dev/null) || true
+   fi
+   ```
+
+   The pre-check is allowed to lie if and only if the index is current. Stale indexes silently miss recently added content, which is exactly the failure mode this guard is here to prevent.
+
+2. **Query.** Run `graphify query "<topic>"` from the vault root and collect the top results (paths + similarity / community membership). Read `graphify-out/GRAPH_REPORT.md` for god-node and community context relevant to the topic. If `graphify-out/wiki/index.md` exists, prefer it over raw graph reads.
+
+3. **Classify each result.** Use the following rubric — when in doubt, err toward STRONG (asking the user to confirm a near-duplicate is cheap; silently generating one is expensive):
+
+   - **STRONG** — high semantic overlap AND a matching archetype/folder. The result is, in practice, the same topic.
+   - **ADJACENT** — related (shares cluster / community / referenced concepts) but distinct topic.
+   - **NONE** — no meaningful overlap.
+
+4. **Decide.**
+
+   - **One or more STRONG matches** → stop. Do not generate. Surface the matches and ask the user:
+
+     > Found existing content that looks like the same topic:
+     > - `<path1>` — <one-line summary>
+     > - `<path2>` — <one-line summary>
+     >
+     > How would you like to proceed?
+     > 1. **Open** the existing content (I'll print it / display the path).
+     > 2. **Edit** it via `/kb edit <path>`.
+     > 3. **Generate a new variant anyway** (e.g. different angle, deeper dive).
+
+     Wait for the user's choice. Do not auto-open. Do not auto-generate.
+
+   - **ADJACENT matches only** → continue with the sub-command, and pass them into `gatheredContext.relatedPaths` so the sub-command can weave links into its output (Related section, cross-references, "See also" bullets, etc.).
+
+   - **NONE** → continue with the sub-command. No cross-links needed.
+
+### Question-answering mode (graphify-first, then narrate)
+
+When the user's request is a *question* about the vault rather than a generation/mutation command (e.g. "what's in my vault about X?", "do we have a diagram for Y?"), the pre-check is still mandatory and the answer style is graphify-first then narrate:
+
+1. Run steps 1-3 above to gather matches.
+2. Present the **paths and summaries** verbatim from graphify as the authoritative list.
+3. Narrate around them: synthesise, explain, point out gaps — but the underlying source-of-truth is the graphify output, not LLM recall.
+
+Never answer a vault-content question purely from memory when graphify is available; the index is fresher than your guess.
+
+## Companion Intelligence (best-effort, after graphify)
+
+After the mandatory graphify pre-check, also gather context from these two systems. They cover what graphify can't (temporal decisions, user preferences). They are *not* gates — a missing claude-mem result or absent MEMORY.md does not block the sub-command.
+
+### claude-mem (Temporal)
 
 Search past session work for anything related to the topic:
 - Use MCP tool `mcp__plugin_claude-mem_mcp-search__search` with `query: "<topic>"`.
 - Collect: past decisions, architectural patterns, prior diagrams on similar topics, lessons learned.
 
-### 3. MEMORY.md (Curated)
+### MEMORY.md (Curated)
 
 If a vault is detected, check for `<vault-root>/.archdesigner/MEMORY.md`:
 - Read it for user preferences, topic registry entries, style feedback, and conventions.
@@ -146,14 +207,16 @@ Combine gathered context into a structured block that the sub-command can refere
 ```
 ## Gathered Context
 
-### Existing Related Content
-- [list of related docs/diagrams found via graphify]
+### Existing Related Content (graphify)
+- strongMatches: [paths that triggered the short-circuit, if any]
+- adjacentMatches: [paths to cross-link]
+- topClusters: [community / god-node context relevant to the topic]
 
-### Past Session Work
-- [relevant observations from claude-mem]
+### Past Session Work (claude-mem)
+- [relevant observations]
 
-### User Preferences
-- [preferences and conventions from MEMORY.md]
+### User Preferences (MEMORY.md)
+- [preferences and conventions]
 ```
 
-If a particular intelligence system yields no results, omit its section rather than including an empty one. If no vault is detected, only claude-mem context will be available.
+Omit any section that yielded no results rather than including an empty one. If no vault is detected, only the claude-mem section will be populated; graphify and MEMORY.md sections are skipped with the notices above.

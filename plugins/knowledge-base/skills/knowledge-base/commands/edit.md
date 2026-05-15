@@ -16,6 +16,22 @@ Edit an existing diagram JSON file. All modifications MUST go through this comma
 - **path** (string, required): Path to the diagram JSON file.
 - **change description** (string): What to add, remove, or modify.
 
+## Step 0: Mandatory Graphify Pre-Check (Awareness)
+
+Before reading the target diagram, before planning the change, run the **Mandatory Graphify Pre-Check** defined in `SKILL.md`. Use the target file's path AND the change description (when provided) as the topic — both signals matter, because the change may pull in concepts that don't appear in the file's current contents.
+
+Unlike generation commands, this pre-check is an **awareness step**, not a gate. The user has explicitly asked to edit this file, so STRONG matches do not short-circuit. Instead:
+
+- **STRONG match found** (a different file covers nearly the same concept) → surface it once before proceeding:
+
+  > Heads-up: this file overlaps strongly with `<other-path>`. Edits here may want to be made there too, or the two should be merged. Continuing the edit on `<target-path>` as requested.
+
+- **ADJACENT matches** → surface "this diagram is referenced by N other files: …" so the user knows the blast radius of structural changes (renamed nodes, deleted layers, etc.). If the change description suggests a rename or deletion, recommend running `/kb edit` on the dependents in a follow-up.
+
+- **NONE** → continue silently.
+
+The pre-check is skipped only when no vault is detected or no graphify index exists (SKILL.md emits the standard notice).
+
 ## Step 1: Read and Parse
 
 Read the diagram JSON at the given path. Extract:
@@ -174,6 +190,20 @@ Please reload the diagram in the knowledge-base app and verify:
 3. Flows highlight the intended paths
 4. Any new flow shows its companion explanation doc in the Flow Properties panel
 ```
+
+## Allowed mutations
+
+### Flow ordering and start/end
+
+`/kb edit` accepts changes to:
+- `flows[].nodeOrders` — replace, add, or remove keys; values must be integers.
+- `flows[].startNodeIds` and `flows[].endNodeIds` — replace, add, or remove. Each entry must be a flow member (i.e. appear as `from` or `to` of one of the flow's `connectionIds`). Reject changes that violate this and report the offending IDs.
+- `nodes[].sources`, `connections[].sources`, `layers[].sources`, `flows[].sources`, top-level `sources` — replace, add, or remove. Each `url` MUST be `http://` or `https://`. Reject other schemes.
+
+### Cross-entity attachment
+
+`/kb edit` accepts changes to:
+- Any entity's `attachedTo` array. The target's `type` must be one of `root | node | connection | flow | type | tab | tab-section | tab-track`. The `id` must reference an existing entity (validated against the relevant diagram / tab / etc.).
 
 ## Common Mistakes to Avoid
 

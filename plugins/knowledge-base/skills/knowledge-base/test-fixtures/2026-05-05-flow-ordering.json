@@ -1,0 +1,161 @@
+{
+  "title": "Flow Ordering Fixture",
+  "layers": [
+    {
+      "id": "ly-app",
+      "title": "APPLICATION",
+      "bg": "#f5f3ff",
+      "border": "#c4b5fd"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "el-browser",
+      "label": "Browser",
+      "icon": "Globe",
+      "x": 100,
+      "y": 100,
+      "w": 210,
+      "layer": "ly-app"
+    },
+    {
+      "id": "el-api-gateway",
+      "label": "API Gateway",
+      "icon": "Server",
+      "x": 400,
+      "y": 100,
+      "w": 210,
+      "layer": "ly-app"
+    },
+    {
+      "id": "el-auth-service",
+      "label": "Auth Service",
+      "icon": "Lock",
+      "x": 700,
+      "y": 100,
+      "w": 210,
+      "layer": "ly-app"
+    },
+    {
+      "id": "el-token-mint",
+      "label": "Token Mint",
+      "icon": "Key",
+      "x": 1000,
+      "y": 100,
+      "w": 210,
+      "layer": "ly-app"
+    },
+    {
+      "id": "el-session-db",
+      "label": "Session DB",
+      "icon": "Database",
+      "x": 1300,
+      "y": 100,
+      "w": 210,
+      "layer": "ly-app"
+    },
+    {
+      "id": "el-browser-redirected",
+      "label": "Browser (redirected)",
+      "icon": "Globe",
+      "x": 100,
+      "y": 400,
+      "w": 210,
+      "layer": "ly-app"
+    }
+  ],
+  "connections": [
+    {
+      "id": "dl-1",
+      "from": "el-browser",
+      "to": "el-api-gateway",
+      "fromAnchor": "right-1",
+      "toAnchor": "left-1",
+      "color": "#64748b",
+      "label": "POST /login",
+      "labelPosition": 0.4
+    },
+    {
+      "id": "dl-2",
+      "from": "el-api-gateway",
+      "to": "el-auth-service",
+      "fromAnchor": "right-1",
+      "toAnchor": "left-1",
+      "color": "#64748b",
+      "label": "verify credentials",
+      "labelPosition": 0.5
+    },
+    {
+      "id": "dl-3",
+      "from": "el-auth-service",
+      "to": "el-token-mint",
+      "fromAnchor": "right-1",
+      "toAnchor": "left-1",
+      "color": "#64748b",
+      "label": "issue token",
+      "labelPosition": 0.5
+    },
+    {
+      "id": "dl-4",
+      "from": "el-token-mint",
+      "to": "el-session-db",
+      "fromAnchor": "right-1",
+      "toAnchor": "left-1",
+      "color": "#64748b",
+      "label": "persist session",
+      "labelPosition": 0.55
+    },
+    {
+      "id": "dl-5",
+      "from": "el-session-db",
+      "to": "el-browser-redirected",
+      "fromAnchor": "bottom-1",
+      "toAnchor": "top-1",
+      "color": "#64748b",
+      "label": "302 redirect",
+      "labelPosition": 0.5
+    },
+    {
+      "id": "dl-6",
+      "from": "el-browser-redirected",
+      "to": "el-api-gateway",
+      "fromAnchor": "right-1",
+      "toAnchor": "bottom-1",
+      "color": "#64748b",
+      "label": "GET /home (with cookie)",
+      "labelPosition": 0.45
+    }
+  ],
+  "layerManualSizes": {},
+  "lineCurve": "bezier",
+  "flows": [
+    {
+      "id": "flow-login",
+      "name": "Login Flow",
+      "category": "Authentication",
+      "connectionIds": ["dl-1", "dl-2", "dl-3", "dl-4", "dl-5", "dl-6"],
+      "nodeOrders": {
+        "el-browser": 1,
+        "el-api-gateway": 2,
+        "el-auth-service": 3,
+        "el-token-mint": 4,
+        "el-session-db": 5,
+        "el-browser-redirected": 6
+      },
+      "startNodeIds": ["el-browser"],
+      "endNodeIds": ["el-session-db"],
+      "sources": [
+        {
+          "url": "https://datatracker.ietf.org/doc/html/rfc6749",
+          "title": "RFC 6749 — OAuth 2.0"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://owasp.org/www-project-authentication-cheat-sheet/",
+      "title": "OWASP Authentication Cheat Sheet"
+    }
+  ]
+}
