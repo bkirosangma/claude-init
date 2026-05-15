@@ -54,11 +54,11 @@ plugins/knowledge-base/
 
 ## Installation
 
-Bundled with `init-workdir`. Copied to `~/.claude/skills/knowledge-base/` by the bootstrap
+Bundled with `workdir`. Copied to `~/.claude/skills/knowledge-base/` by the bootstrap
 subcommand:
 
 ```
-/init-workdir bootstrap
+/workdir bootstrap
 ```
 
 Or standalone:

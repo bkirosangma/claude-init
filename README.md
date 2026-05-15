@@ -6,7 +6,7 @@ Personal Claude Code plugin marketplace maintained by [@bkirosangma](https://git
 
 | Plugin | What it does | Docs |
 |---|---|---|
-| **`init-workdir`** | Provision and maintain a multi-repo workspace: provider auth, gitconfig, ignore files, compound intelligence (graphify + claude-mem + MEMORY.md), knowledge vault, ui-ux-pro-max integration, group-organized repo cloning with self-hosted GitLab host detection, idempotent re-init, version-tracked manifest. Includes a `bootstrap` subcommand that installs everything for a fresh machine. | [plugins/init-workdir/README.md](plugins/init-workdir/README.md) |
+| **`workdir`** | Provision and maintain a multi-repo workspace: provider auth, gitconfig, ignore files, compound intelligence (graphify + claude-mem + MEMORY.md), knowledge vault, ui-ux-pro-max integration, group-organized repo cloning with self-hosted GitLab host detection, idempotent re-init, version-tracked manifest. Includes a `bootstrap` subcommand that installs everything for a fresh machine. | [plugins/workdir/README.md](plugins/workdir/README.md) |
 | **`knowledge-base`** | `/kb` skill for managing knowledge-base vaults — architecture documents, design diagrams, ADRs, runbooks. **Full version** including music-domain features (SVG notation, guitar tabs, music archetype). Sub-commands: init, document, diagram, create, edit, svg, guitar-tabs, validate, transform. | [plugins/knowledge-base/README.md](plugins/knowledge-base/README.md) |
 | **`hybrid-search`** | Fused search across claude-mem (temporal) + graphify (structural) using Reciprocal Rank Fusion. Ships the canonical compound-intelligence hook scripts (auto-rebuild-graph, crystallize, contradiction-check, decay, proceduralize, bump-relevance, Read-context injection). | [plugins/hybrid-search/README.md](plugins/hybrid-search/README.md) |
 | **`compound-dispatch`** | Enriches subagent prompts with "Prior Knowledge" from graphify + claude-mem + MEMORY.md before dispatch. Closes the gap where subagents start with blank context. | [plugins/compound-dispatch/README.md](plugins/compound-dispatch/README.md) |
@@ -15,17 +15,17 @@ Personal Claude Code plugin marketplace maintained by [@bkirosangma](https://git
 
 ### Quick start — fresh machine
 
-`init-workdir` is the recommended first install. Its `bootstrap` subcommand installs every external dependency (Homebrew packages, pipx graphify, npm uipro-cli, third-party Claude plugins) **and** copies the bundled `knowledge-base`, `hybrid-search`, `compound-dispatch` skills into `~/.claude/skills/<name>/` with the global hooks wired up. Three commands and the rest of the marketplace is ready:
+`workdir` is the recommended first install. Its `bootstrap` subcommand installs every external dependency (Homebrew packages, pipx graphify, npm uipro-cli, third-party Claude plugins) **and** copies the bundled `knowledge-base`, `hybrid-search`, `compound-dispatch` skills into `~/.claude/skills/<name>/` with the global hooks wired up. Three commands and the rest of the marketplace is ready:
 
 ```bash
 # After registering the marketplace (Step 2 below):
-claude plugin install init-workdir@claude-init
+claude plugin install workdir@claude-init
 # In a claude session:
-/init-workdir bootstrap        # installs CLIs, third-party plugins, bundled skills, global hooks
-/init-workdir github           # provisions a workspace (or `gitlab`)
+/workdir bootstrap        # installs CLIs, third-party plugins, bundled skills, global hooks
+/workdir init github      # provisions a workspace (or `init gitlab`)
 ```
 
-If you only want a single plugin (e.g. just `knowledge-base`), install it directly — `init-workdir`/`bootstrap` is optional.
+If you only want a single plugin (e.g. just `knowledge-base`), install it directly — `workdir`/`bootstrap` is optional.
 
 ---
 
@@ -87,7 +87,7 @@ claude plugin install <plugin-name>@claude-init
 For example:
 
 ```bash
-claude plugin install init-workdir@claude-init
+claude plugin install workdir@claude-init
 ```
 
 Or, equivalently, start `claude` and use the slash command:
@@ -95,14 +95,14 @@ Or, equivalently, start `claude` and use the slash command:
 ```bash
 claude
 # inside the session:
-/plugin install init-workdir@claude-init
+/plugin install workdir@claude-init
 ```
 
 Verify it installed:
 
 ```bash
 claude plugin list
-# Should include: init-workdir@claude-init (enabled)
+# Should include: workdir@claude-init (enabled)
 ```
 
 If you started a `claude` session before installing, **exit and restart** so it loads the new skill.
@@ -153,12 +153,12 @@ claude plugin update <plugin-name>@claude-init
 .claude-plugin/
   marketplace.json           # marketplace manifest, lists plugins[]
 plugins/
-  init-workdir/              # workspace coordinator + fresh-machine bootstrap
+  workdir/              # workspace coordinator + fresh-machine bootstrap
     .claude-plugin/plugin.json
     hooks/                   # canonical update-check hook (drop-in across all plugins)
-    skills/init-workdir/
-      SKILL.md               # router with bootstrap, github, gitlab, clone, update subcommands
-      CHANGELOG.md           # newest-first; drives /init-workdir update diffs
+    skills/workdir/
+      SKILL.md               # router with bootstrap, init <github|gitlab>, clone, update subcommands
+      CHANGELOG.md           # newest-first; drives /workdir update diffs
       CODING_STANDARDS.md    # seeded into each provisioned workspace
       commands/              # one file per subcommand
       memory-seeds/          # MEMORY.md files copied into per-machine memory dir

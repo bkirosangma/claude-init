@@ -13,7 +13,6 @@ Check both the provider CLI and the compound intelligence stack.
 
 ```bash
 export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
-[ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh" && nvm use 22 >/dev/null 2>&1 || true
 
 # Provider CLI
 case "<provider>" in
@@ -79,16 +78,26 @@ After they confirm it's done, verify with `auth status` again before continuing.
 ```bash
 WORKDIR=$(pwd)
 WORKDIR_BASENAME=$(basename "$WORKDIR")
-CURRENT_VERSION=$(awk '/^version:/{print $2; exit}' ~/.claude/skills/init-workdir/SKILL.md)
+CURRENT_VERSION=$(awk '/^version:/{print $2; exit}' ~/.claude/skills/workdir/SKILL.md)
 
 echo "Workspace:           $WORKDIR"
 echo "Skill version:       $CURRENT_VERSION"
 ```
 
+**Auto-migrate legacy state dir** (`.init-workdir/` → `.workdir/`) if present from a v1
+workspace. The directory rename is atomic and preserves the manifest:
+
+```bash
+if [ -d "$WORKDIR/.init-workdir" ] && [ ! -d "$WORKDIR/.workdir" ]; then
+  mv "$WORKDIR/.init-workdir" "$WORKDIR/.workdir"
+  echo "Migrated state dir:  .init-workdir/ → .workdir/ (v1 → v2 layout)"
+fi
+```
+
 **Read prior init manifest** (informational — per-step probes remain the source of truth):
 
 ```bash
-MANIFEST="$WORKDIR/.init-workdir/state.json"
+MANIFEST="$WORKDIR/.workdir/state.json"
 if [ -f "$MANIFEST" ]; then
   PRIOR_VERSION=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["skillVersion"])' "$MANIFEST" 2>/dev/null || echo "")
   PRIOR_AT=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1])).get("appliedAt",""))' "$MANIFEST" 2>/dev/null || echo "")
@@ -115,11 +124,11 @@ if [ -n "$PRIOR_VERSION" ] && [ "$PRIOR_VERSION" != "$CURRENT_VERSION" ] && [ "$
     /^## / && $2 == prior { exit }
     /^## / { active=1 }
     active { print }
-  ' ~/.claude/skills/init-workdir/CHANGELOG.md
+  ' ~/.claude/skills/workdir/CHANGELOG.md
 elif [ "$PRIOR_VERSION" = "legacy" ]; then
   echo ""
   echo "No version manifest found — every step will probe current state and apply only what's missing."
-  echo "See ~/.claude/skills/init-workdir/CHANGELOG.md for the full version history."
+  echo "See ~/.claude/skills/workdir/CHANGELOG.md for the full version history."
 fi
 ```
 
@@ -130,7 +139,7 @@ fi
 | `NEW` | "Initialize workspace at `<WORKDIR>`?" | Abort |
 | `UPGRADE` (same version) | "Workspace already at `$CURRENT_VERSION`. Re-run all steps to verify state?" | Skip to Step 15 (summary) |
 | `UPGRADE` (older version) | "Upgrade workspace from `$PRIOR_VERSION` → `$CURRENT_VERSION`? Steps will probe current state and apply only what's missing or changed." | Skip to Step 15 (summary) |
-| `LEGACY` | "Workspace exists but has no init manifest. Run all steps with idempotency probes (existing files preserved) and write the manifest?" | Skip to Step 15 (summary) |
+| `LEGACY` | "Workspace exists but has no manifest. Run all steps with idempotency probes (existing files preserved) and write the manifest?" | Skip to Step 15 (summary) |
 
 In all "yes" cases, proceed to Step 4. **Each subsequent step probes the workspace itself** —
 the manifest is read for the upgrade summary above but is **not** used to skip steps.
@@ -208,8 +217,8 @@ graphify-out/
 # Claude Code project settings
 .claude/
 
-# init-workdir state manifest
-.init-workdir/
+# workdir state manifest
+.workdir/
 ```
 
 **`.claudeignore`** — create or update at `<WORKDIR>/.claudeignore`. Add if not present:
@@ -298,7 +307,7 @@ If the vault directory already exists and contains `.archdesigner/config.json`, 
 Copy the global coding standards into the workspace so they travel with the project and can be customized per-workspace:
 
 ```bash
-SKILL_STANDARDS=~/.claude/skills/init-workdir/CODING_STANDARDS.md
+SKILL_STANDARDS=~/.claude/skills/workdir/CODING_STANDARDS.md
 if [ -f "$SKILL_STANDARDS" ]; then
   if [ -f "<WORKDIR>/CODING_STANDARDS.md" ]; then
     echo "CODING_STANDARDS.md already exists — skipping (preserved)"
@@ -307,7 +316,7 @@ if [ -f "$SKILL_STANDARDS" ]; then
     echo "Copied CODING_STANDARDS.md"
   fi
 else
-  echo "~/.claude/skills/init-workdir/CODING_STANDARDS.md not found — skipping"
+  echo "~/.claude/skills/workdir/CODING_STANDARDS.md not found — skipping"
 fi
 ```
 
@@ -328,7 +337,7 @@ CLI: <gh|glab>
 
 ## Projects
 
-<!-- @includes are added automatically when you run /init-workdir clone -->
+<!-- @includes are added automatically when you run /workdir clone -->
 
 ## graphify — Structural Intelligence
 
@@ -433,7 +442,7 @@ This workspace maintains a local copy of coding standards at `CODING_STANDARDS.m
 
 ## Feature & Test Tracking
 
-Every repository in this workspace maintains `Features.md` and `test-cases/` at its root. These are created automatically when a repo is cloned via `/init-workdir clone`.
+Every repository in this workspace maintains `Features.md` and `test-cases/` at its root. These are created automatically when a repo is cloned via `/workdir clone`.
 
 ### Features.md — Source of Truth for Features
 
@@ -550,7 +559,7 @@ graphify (structural) + claude-mem (temporal) + MEMORY.md (curated) = unified in
 | `/hybrid-search procedures` | View extracted workflow recipes |
 | `/mem-search "query"` | Search claude-mem observation history |
 | `/compound-dispatch` | Enrich subagent prompt with unified context |
-| `/init-workdir clone <url>` | Clone a repo and register it in this workspace |
+| `/workdir clone <url>` | Clone a repo and register it in this workspace |
 
 ## Git Configuration
 
@@ -597,27 +606,18 @@ Distributed via the `uipro-cli` npm package and installed into Claude Code as a 
 
 ```bash
 export PATH="$HOME/.bun/bin:$PATH"
-[ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh" && nvm use 22 >/dev/null 2>&1 || true
 
 # Install the CLI globally if missing
 if ! command -v uipro >/dev/null 2>&1; then
-  if ! command -v npm >/dev/null 2>&1; then
-    echo "uipro-cli: skipped — npm not on PATH (run /init-workdir bootstrap first or open a fresh terminal)"
-  else
-    echo "uipro-cli: MISSING — installing globally via npm"
-    npm install -g uipro-cli
-  fi
+  echo "uipro-cli: MISSING — installing globally via npm"
+  npm install -g uipro-cli
 fi
 
 # Idempotent: re-running re-syncs the skill to the latest version
-if command -v uipro >/dev/null 2>&1; then
-  cd "$WORKDIR" && uipro init --ai claude
-else
-  echo "uipro-cli: not installed — skipping uipro init (workspace setup continues)"
-fi
+cd "$WORKDIR" && uipro init --ai claude
 ```
 
-If `npm` is missing, instruct the user to install Node 22+ and re-run `/init-workdir <provider>`.
+If `npm` is missing, instruct the user to install Node 22+ and re-run `/workdir init <provider>`.
 If `uipro init --ai claude` fails (network, registry), surface the error and continue — the rest
 of the workspace setup is unaffected.
 
@@ -629,13 +629,13 @@ Reference: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
 
 MEMORY.md is per-workspace, per-machine — it lives at
 `~/.claude/projects/<encoded-workdir>/memory/MEMORY.md`, not inside the workspace tree, so a
-fresh machine running `/init-workdir` starts with an empty MEMORY.md. To make portable,
+fresh machine running `/workdir init` starts with an empty MEMORY.md. To make portable,
 durable feedback travel with the skill, the skill ships memory seeds in
-`~/.claude/skills/init-workdir/memory-seeds/`. This step copies them into the workspace's
+`~/.claude/skills/workdir/memory-seeds/`. This step copies them into the workspace's
 memory dir on first init (idempotent — preserves existing files).
 
 ```bash
-SEEDS_DIR=~/.claude/skills/init-workdir/memory-seeds
+SEEDS_DIR=~/.claude/skills/workdir/memory-seeds
 [ -d "$SEEDS_DIR" ] || { echo "No memory seeds shipped — skipping"; exit 0; }
 
 MEMORY_DIR=$(python3 -c "
@@ -670,7 +670,7 @@ done
 
 Existing seed files already present in the workspace memory dir are **never** overwritten —
 the user may have edited them. New seeds added in future skill versions will be picked up on
-the next `/init-workdir update` run.
+the next `/workdir update` run.
 
 ---
 
@@ -680,10 +680,10 @@ Record this run for future re-init diffing. The manifest is **informational only
 relies on per-step probes for correctness, never on the manifest's `appliedSteps` list.
 
 ```bash
-mkdir -p "$WORKDIR/.init-workdir"
+mkdir -p "$WORKDIR/.workdir"
 APPLIED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-python3 - "$WORKDIR/.init-workdir/state.json" "$CURRENT_VERSION" "$APPLIED_AT" <<'PY'
+python3 - "$WORKDIR/.workdir/state.json" "$CURRENT_VERSION" "$APPLIED_AT" <<'PY'
 import json, os, sys
 path, version, applied_at = sys.argv[1], sys.argv[2], sys.argv[3]
 state = {"skillVersion": version, "appliedAt": applied_at, "history": []}
@@ -702,7 +702,7 @@ with open(path, "w") as fh:
     json.dump(state, fh, indent=2)
 PY
 
-echo "Manifest written: $WORKDIR/.init-workdir/state.json (version $CURRENT_VERSION)"
+echo "Manifest written: $WORKDIR/.workdir/state.json (version $CURRENT_VERSION)"
 ```
 
 The manifest schema:
@@ -736,7 +736,7 @@ Workspace initialized: <WORKDIR>
 
   CLAUDE.md:   <WORKDIR>/CLAUDE.md  (compound intelligence hub)
   MEMORY.md:   ~/.claude/projects/<encoded-workdir>/memory/MEMORY.md  (auto-created on first save)
-  Manifest:    <WORKDIR>/.init-workdir/state.json  (skill version $CURRENT_VERSION, history of prior runs)
+  Manifest:    <WORKDIR>/.workdir/state.json  (skill version $CURRENT_VERSION, history of prior runs)
 
   Compound Intelligence Stack:
     graphify (structural)
@@ -775,8 +775,8 @@ Workspace initialized: <WORKDIR>
       Use:     auto-activates for design system generation, UI audits, and frontend code
 
 Next steps:
-  Clone a repo:        /init-workdir clone <url>
-  Clone with group:    /init-workdir clone <url> --group <name>
+  Clone a repo:        /workdir clone <url>
+  Clone with group:    /workdir clone <url> --group <name>
   Build graph:         /graphify .
   Search memory:       /mem-search "query"
   Fused search:        /hybrid-search "topic"

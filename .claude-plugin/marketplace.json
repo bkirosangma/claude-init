@@ -8,13 +8,13 @@
   },
   "plugins": [
     {
-      "name": "init-workdir",
+      "name": "workdir",
       "description": "Initialize and maintain a multi-repo workspace with compound intelligence (graphify + claude-mem + MEMORY.md), workspace-scoped gitconfig, ignore files, knowledge vault, coding standards, claude-mem worker, ui-ux-pro-max skill, group-organized repo cloning with host detection, idempotent re-init via per-step probes, version-tracked manifest with changelog diff on update, and portable MEMORY.md seed bootstrap.",
       "author": {
         "name": "Banchan Kiro A Sangma",
         "email": "bkirosangma@gmail.com"
       },
-      "source": "./plugins/init-workdir",
+      "source": "./plugins/workdir",
       "category": "developer-tools"
     },
     {

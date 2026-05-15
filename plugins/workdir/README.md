@@ -1,4 +1,4 @@
-# init-workdir
+# workdir
 
 A Claude Code skill that initializes and maintains a **multi-repo workspace** with the full
 compound-intelligence stack — graphify (structural), claude-mem (temporal), MEMORY.md
@@ -7,6 +7,10 @@ standards, the ui-ux-pro-max design skill, and group-organized repo cloning.
 
 It treats your `Work/<workspace>/` directory as a managed environment with versioned
 configuration, idempotent re-runs, and portable memory seeds.
+
+> v2 rename: this plugin was previously named `init-workdir`. The slash command changed
+> from `/init-workdir` to `/workdir`, and the provider sub-commands moved under `init`
+> (`/workdir init github|gitlab`). See [Migration from v1](#migration-from-v1) below.
 
 ---
 
@@ -24,7 +28,7 @@ configuration, idempotent re-runs, and portable memory seeds.
 | **UI/UX Pro Max** | Auto-installs `uipro-cli` globally and runs `uipro init --ai claude` to register the design skill |
 | **Repo cloning** | `clone <owner/repo>` auto-detects the GitLab host + SSH port from existing repos, mirrors the workspace's auth pattern, scaffolds `Features.md` and `test-cases/`, registers the repo in the parent `CLAUDE.md`, runs `graphify update .` so the new repo lands in the cross-repo graph |
 | **Idempotent re-init** | Every step probes the workspace before acting — re-running is safe and surfaces only what's missing |
-| **Version manifest** | Writes `.init-workdir/state.json` so future runs know what skill version provisioned the workspace |
+| **Version manifest** | Writes `.workdir/state.json` so future runs know what skill version provisioned the workspace |
 | **Changelog diff on update** | `update` reads the prior manifest and prints "what's new since version X.Y.Z" by diffing the skill's CHANGELOG |
 | **Portable memory seeds** | Ships `memory-seeds/*.md` files that get copied into the workspace's per-machine MEMORY.md memory dir on every init/update — durable feedback travels to fresh machines |
 
@@ -36,20 +40,20 @@ This plugin is part of the **`claude-init`** marketplace. After registering the 
 `~/.claude/settings.json` (see the repo root README), install with:
 
 ```
-/plugin install init-workdir@claude-init
+/plugin install workdir@claude-init
 ```
 
-Restart Claude Code. The slash command `/init-workdir` appears in your command list.
+Restart Claude Code. The slash command `/workdir` appears in your command list.
 
 ### Fresh-machine setup (one-time)
 
 ```
-/plugin install init-workdir@claude-init   # register the skill in your CC instance
-/init-workdir bootstrap                    # installs all dependencies
-/init-workdir github                       # provisions a workspace (or `gitlab`)
+/plugin install workdir@claude-init   # register the skill in your CC instance
+/workdir bootstrap                    # installs all dependencies
+/workdir init github                  # provisions a workspace (or `gitlab`)
 ```
 
-The `bootstrap` subcommand handles **everything** init-workdir depends on:
+The `bootstrap` subcommand handles **everything** workdir depends on:
 
 | Layer | Installed by bootstrap |
 |---|---|
@@ -67,19 +71,20 @@ The `bootstrap` subcommand handles **everything** init-workdir depends on:
 ## Usage
 
 ```
-/init-workdir bootstrap                   Fresh-machine setup: install all CLIs, plugins, hooks
-/init-workdir github                      Initialize workspace with GitHub (gh CLI)
-/init-workdir gitlab                      Initialize workspace with GitLab (glab CLI)
-/init-workdir clone <url>                 Clone repo, auto-detect group from namespace
-/init-workdir clone <url> --group <name>  Clone repo into a specific group folder
-/init-workdir update                      Update existing workspace to latest skill version
+/workdir bootstrap                   Fresh-machine setup: install all CLIs, plugins, hooks
+/workdir init github                 Initialize workspace with GitHub (gh CLI)
+/workdir init gitlab                 Initialize workspace with GitLab (glab CLI)
+/workdir clone <url>                 Clone repo, auto-detect group from namespace
+/workdir clone <url> --group <name>  Clone repo into a specific group folder
+/workdir update                      Update existing workspace to latest skill version
+/workdir pull                        Pull latest changes for every repo (safe handling of dirty/diverged)
 ```
 
 ### First-time init
 
 ```
 cd ~/Work/my-workspace
-/init-workdir github
+/workdir init github
 ```
 
 Walks you through prerequisites, auth, gitconfig identity, ignore files, hook installation,
@@ -89,8 +94,8 @@ optional initial knowledge graph build, MEMORY.md seed bootstrap, and writes a m
 ### Cloning a repo
 
 ```
-/init-workdir clone bkirosangma/myrepo
-/init-workdir clone https://github.com/myorg/myrepo.git --group platform
+/workdir clone bkirosangma/myrepo
+/workdir clone https://github.com/myorg/myrepo.git --group platform
 ```
 
 Auto-detects the group from the URL namespace (or use `--group`). For GitLab self-hosted, it
@@ -108,16 +113,41 @@ After clone:
 ### Updating an existing workspace
 
 ```
-/init-workdir update
+/workdir update
 ```
 
-Reads `<WORKDIR>/.init-workdir/state.json`, prints the changelog diff between the prior
+Reads `<WORKDIR>/.workdir/state.json`, prints the changelog diff between the prior
 version and the current skill version, and runs only the idempotent steps that matter for
 upgrades — ignore files, graphify hook, vault, CLAUDE.md, claude-mem worker, ui-ux-pro-max
 re-sync, memory seeds. Skips auth, gitconfig prompts, and the heavy initial graph build.
 
 For a "legacy" workspace (CLAUDE.md present but no manifest), `update` runs all idempotent
 steps and writes the first manifest.
+
+---
+
+## Migration from v1
+
+If you previously installed `init-workdir@claude-init`, v2 is a renaming + sub-command
+restructure. Three things change:
+
+| v1 | v2 |
+|---|---|
+| `/init-workdir github` (or `gitlab`) | `/workdir init github` (or `gitlab`) |
+| `/init-workdir bootstrap`, `clone`, `update` | `/workdir bootstrap`, `clone`, `update` |
+| `<WORKDIR>/.init-workdir/state.json` | `<WORKDIR>/.workdir/state.json` (auto-migrated) |
+
+To migrate:
+
+```
+/plugin uninstall init-workdir@claude-init
+/plugin install workdir@claude-init
+# in any v1 workspace:
+/workdir update                    # auto-renames .init-workdir/ → .workdir/, bumps manifest to 2.0.0
+```
+
+No manual file edits required — the migration is performed by `init.md` and `update.md` on the
+first run inside a v1 workspace.
 
 ---
 
@@ -136,22 +166,22 @@ Every step inspects the workspace before acting:
 
 Source of truth is **the workspace itself**, not the manifest. The manifest is informational.
 
-### Version manifest at `<WORKDIR>/.init-workdir/state.json`
+### Version manifest at `<WORKDIR>/.workdir/state.json`
 
 ```json
 {
-  "skillVersion": "1.7.0",
-  "appliedAt": "2026-05-04T08:28:55Z",
+  "skillVersion": "2.0.0",
+  "appliedAt": "2026-05-15T10:00:00Z",
   "history": [
     { "version": "1.5.0", "appliedAt": "2026-05-04T08:08:53Z" },
-    { "version": "1.6.0", "appliedAt": "2026-05-04T08:15:58Z" }
+    { "version": "1.7.0", "appliedAt": "2026-05-04T09:47:23Z" }
   ]
 }
 ```
 
 The manifest answers "which version of the skill provisioned this workspace, and when?" The
 re-init/update flow reads it to compute "what's new since X.Y.Z" by diffing the skill's
-[CHANGELOG.md](skills/init-workdir/CHANGELOG.md).
+[CHANGELOG.md](skills/workdir/CHANGELOG.md).
 
 ### CHANGELOG-driven upgrade summaries
 
@@ -163,7 +193,7 @@ combined sections to the user. Adding a new feature requires:
 2. Bump `version:` in `SKILL.md`
 3. Add a `## X.Y.Z — YYYY-MM-DD` section at the **top** of `CHANGELOG.md`
 
-Existing workspaces pick up the change on the next `/init-workdir update`.
+Existing workspaces pick up the change on the next `/workdir update`.
 
 ### MEMORY.md seeds (portability)
 
@@ -203,22 +233,25 @@ where:
 ## Plugin Layout
 
 ```
-plugins/init-workdir/
+plugins/workdir/
 ├── .claude-plugin/
 │   └── plugin.json                       # plugin manifest
 ├── hooks/
 │   ├── hooks.json                        # SessionStart update-check
 │   └── check-update.sh                   # marketplace drift detector
 └── skills/
-    └── init-workdir/
+    └── workdir/
         ├── SKILL.md                      # router and metadata (frontmatter + sub-command table)
         ├── CHANGELOG.md                  # newest-first version history; drives upgrade diffs
         ├── CODING_STANDARDS.md           # seeded into each workspace
         ├── commands/
         │   ├── bootstrap.md              # fresh-machine dependency install (bootstrap subcommand)
-        │   ├── init.md                   # 15-step setup flow (github/gitlab subcommand)
+        │   ├── init.md                   # 15-step setup flow (init <provider> subcommand)
         │   ├── update.md                 # incremental upgrade flow (update subcommand)
-        │   └── clone.md                  # repo clone + scaffolding (clone subcommand)
+        │   ├── clone.md                  # repo clone + scaffolding (clone subcommand)
+        │   └── pull.md                   # plan/execute git pull across all repos (pull subcommand)
+        ├── scripts/
+        │   └── pull.sh                   # main pull-all script (plan + execute phases)
         └── memory-seeds/
             └── feedback_ui_ux_pro_max_with_superpowers.md
 ```
@@ -227,7 +260,7 @@ plugins/init-workdir/
 
 ## Adding a new memory seed
 
-1. Create `skills/init-workdir/memory-seeds/<type>_<topic>.md` with frontmatter:
+1. Create `skills/workdir/memory-seeds/<type>_<topic>.md` with frontmatter:
    ```markdown
    ---
    name: Short title
@@ -239,7 +272,7 @@ plugins/init-workdir/
    ```
 2. Bump the skill's `version:` and add a `CHANGELOG.md` entry referencing the new seed.
 3. Open a PR.
-4. After merge, the seed is picked up on the next `/init-workdir update`.
+4. After merge, the seed is picked up on the next `/workdir update`.
 
 ---
 
@@ -251,7 +284,7 @@ plugins/init-workdir/
 ├── CODING_STANDARDS.md           # Workspace-scoped (customisable)
 ├── .gitconfig                    # Workspace-scoped git identity
 ├── .gitignore .claudeignore .graphifyignore
-├── .init-workdir/
+├── .workdir/
 │   └── state.json                # Skill version manifest
 ├── .claude/
 │   └── settings.json             # graphify PreToolUse hook
@@ -266,13 +299,14 @@ plugins/init-workdir/
 
 | Command | What it does |
 |---------|--------------|
-| `/init-workdir bootstrap` | Fresh-machine setup: external CLIs, third-party plugins, global hooks |
-| `/init-workdir github` | First-time init, GitHub provider |
-| `/init-workdir gitlab` | First-time init, GitLab provider |
-| `/init-workdir clone <url>` | Clone a repo, auto-detect group, scaffold `Features.md`/`test-cases/`, update workspace `CLAUDE.md`, rebuild cross-repo graph |
-| `/init-workdir clone <url> --group <name>` | Same, with manual group override |
-| `/init-workdir update` | Bring workspace up to current skill version; prints changelog diff, runs idempotent steps |
-| `/init-workdir help` | Print the usage block |
+| `/workdir bootstrap` | Fresh-machine setup: external CLIs, third-party plugins, global hooks |
+| `/workdir init github` | First-time init, GitHub provider |
+| `/workdir init gitlab` | First-time init, GitLab provider |
+| `/workdir clone <url>` | Clone a repo, auto-detect group, scaffold `Features.md`/`test-cases/`, update workspace `CLAUDE.md`, rebuild cross-repo graph |
+| `/workdir clone <url> --group <name>` | Same, with manual group override |
+| `/workdir update` | Bring workspace up to current skill version; prints changelog diff, runs idempotent steps |
+| `/workdir pull` | Plan-then-execute pull across every repo in the workspace. Fetches in parallel, surfaces dirty/diverged/in-progress repos for review, never runs destructive operations without explicit confirmation |
+| `/workdir help` | Print the usage block |
 
 ---
 
@@ -280,10 +314,10 @@ plugins/init-workdir/
 
 The skill source of truth lives in this plugin folder. To make changes:
 
-1. Edit the relevant file under `skills/init-workdir/`
+1. Edit the relevant file under `skills/workdir/`
 2. Bump `version:` in `SKILL.md`
 3. Add a section at the top of `CHANGELOG.md` describing what changed
 4. Open a PR
 
-After merge, users pick up changes on `/plugin update init-workdir@claude-init` (or a
-Claude Code restart) and `/init-workdir update` from inside their workspaces.
+After merge, users pick up changes on `/plugin update workdir@claude-init` (or a
+Claude Code restart) and `/workdir update` from inside their workspaces.

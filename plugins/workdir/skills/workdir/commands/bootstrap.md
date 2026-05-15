@@ -1,9 +1,9 @@
 # Bootstrap Command
 
-Set up everything `init-workdir` depends on for a fresh-machine first run. After bootstrap,
-`/init-workdir <github|gitlab>` should pass all prerequisite checks immediately.
+Set up everything `workdir` depends on for a fresh-machine first run. After bootstrap,
+`/workdir init <github|gitlab>` should pass all prerequisite checks immediately.
 
-**Run this once per machine, before the first `/init-workdir <provider>`.**
+**Run this once per machine, before the first `/workdir init <provider>`.**
 
 What gets installed:
 
@@ -36,7 +36,7 @@ If no, exit cleanly. If yes, proceed.
 if ! command -v brew >/dev/null 2>&1; then
   echo "ERROR: Homebrew is required but missing."
   echo "Install via: /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
-  echo "Then re-run /init-workdir bootstrap."
+  echo "Then re-run /workdir bootstrap."
   exit 1
 fi
 echo "✓ brew $(brew --version | head -1)"
@@ -114,21 +114,10 @@ echo "✓ graphify skill installed via 'graphify install --platform claude'"
 
 ## Step 5 — Install uipro-cli
 
-Source nvm first — this step runs in a fresh shell so the Node installed in Step 3 may not be
-on PATH yet. `\.` is the POSIX equivalent of `source`; the `|| true` avoids aborting under
-`set -e` when nvm is absent on a non-fresh-machine path.
-
 ```bash
-[ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh" && nvm use 22 >/dev/null 2>&1 || true
-
 if command -v uipro >/dev/null 2>&1; then
   echo "✓ uipro $(uipro --version 2>&1 | head -1)"
 else
-  if ! command -v npm >/dev/null 2>&1; then
-    echo "ERROR: npm not found. Re-run Step 3 to install Node 22 via nvm,"
-    echo "or open a new terminal so your shell sources ~/.nvm/nvm.sh."
-    exit 1
-  fi
   echo "+ Installing uipro-cli"
   npm install -g uipro-cli
 fi
@@ -172,7 +161,7 @@ MARKETPLACE_DIR=~/.claude/plugins/marketplaces/claude-init
 if [ ! -d "$MARKETPLACE_DIR" ]; then
   echo "ERROR: claude-init marketplace not registered yet."
   echo "Add to ~/.claude/settings.json under 'extraKnownMarketplaces' first, restart Claude Code,"
-  echo "then re-run /init-workdir bootstrap."
+  echo "then re-run /workdir bootstrap."
   exit 1
 fi
 
@@ -288,8 +277,8 @@ Installed / verified:
   ✓ Global hooks:     ~/.claude/settings.json
 
 Next:
-  /init-workdir gitlab    # provision a workspace
-  /init-workdir github    # or with GitHub
+  /workdir init gitlab    # provision a workspace
+  /workdir init github    # or with GitHub
 ```
 
 ---
@@ -303,4 +292,4 @@ Next:
 | `claude plugins add` interactive prompt | Approve the plugin install when prompted; idempotent on re-run |
 | `pipx install graphifyy` fails | Ensure pipx is on PATH (`pipx ensurepath` then restart shell) |
 | Hooks already exist with different paths | The merge preserves them — bootstrap only adds missing entries |
-| Want to overwrite an existing local skill copy | Re-run `/init-workdir bootstrap --force` |
+| Want to overwrite an existing local skill copy | Re-run `/workdir bootstrap --force` |

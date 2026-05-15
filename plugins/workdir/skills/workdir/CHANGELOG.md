@@ -1,4 +1,4 @@
-# init-workdir Changelog
+# workdir Changelog
 
 Each version section lists what changed in that version. The `init` command reads this file
 on re-init and prints "what's new since version X.Y.Z" to the user. Sections must be sorted
@@ -6,16 +6,46 @@ newest-first.
 
 Format: `## <version> — <YYYY-MM-DD>` followed by a bulleted list of changes.
 
+## 2.1.0 — 2026-05-15
+- New `pull` subcommand. `/workdir pull` fetches every repo in the workspace in parallel, then
+  categorises each into one of 8 buckets (up-to-date, ff-pull, ahead-only, diverged, dirty,
+  in-progress, no-upstream, fetch-failed) and shows a preview table before doing anything
+- Default strategy for clean+diverged repos: `git pull --rebase` (with auto-`rebase --abort` on
+  conflicts, surfaced for manual resolution). Configurable per-workspace via
+  `<WORKDIR>/.workdir/pull.config.json`
+- Default strategy for dirty+needs-pull repos: `git stash --include-untracked` → pull → `stash
+  pop`. If the pop conflicts, the stash is preserved and surfaced. Configurable
+- Two-phase invocation: `pull.sh` plans (fetch + preview, no mutations), `pull.sh --execute`
+  reads the plan and acts. Skill's `pull.md` confirms with the user between phases
+- Hard-guarded against destructive operations: never auto-runs `reset --hard`, `clean -fd`, or
+  any push. Never touches repos with active merge/rebase/cherry-pick. `GIT_TERMINAL_PROMPT=0`
+  prevents auth prompts from hanging the run
+- New file: `scripts/pull.sh`. New command file: `commands/pull.md`. SKILL.md routing table
+  extended with the `pull` token
+
+## 2.0.0 — 2026-05-15
+- **Breaking — skill renamed `init-workdir` → `workdir`.** Slash command is now `/workdir`
+  (the old `/init-workdir` and `/iwd` aliases no longer route to this skill)
+- **Breaking — provider sub-commands moved under `init`.** `/init-workdir github` is now
+  `/workdir init github`; `/init-workdir gitlab` is now `/workdir init gitlab`. `bootstrap`,
+  `clone`, and `update` remain at the top level
+- **Breaking — workspace state dir renamed `.init-workdir/` → `.workdir/`.** Existing
+  workspaces are auto-migrated on the next `/workdir init` or `/workdir update` run (the
+  directory is `mv`'d in place, preserving `state.json` and history)
+- Marketplace reference in `bootstrap` switched from `sportstech` to `claude-init`. The
+  bootstrap step reads bundled skills from `~/.claude/plugins/marketplaces/claude-init/`
+- `.gitignore` template now emits `.workdir/` (was `.init-workdir/`)
+
 ## 1.7.0 — 2026-05-04
 - New `bootstrap` subcommand. `/init-workdir bootstrap` does fresh-machine setup: installs
   Homebrew packages (gh, glab, bun, pipx), Node 22 via nvm, graphify via pipx + its skill via
   `graphify install --platform claude`, uipro-cli via npm, third-party plugins (claude-mem,
   superpowers), and writes the global hook entries to `~/.claude/settings.json` (idempotent
   JSON merge — preserves existing hooks)
-- `bootstrap` also copies the bundled claude-init marketplace skills (knowledge-base,
+- `bootstrap` also copies the bundled sportstech marketplace skills (knowledge-base,
   hybrid-search, compound-dispatch) into `~/.claude/skills/<name>/` so existing hook paths
   resolve. Use `--force` to overwrite existing local skill copies
-- Sibling plugins added to the claude-init marketplace alongside init-workdir:
+- Sibling plugins added to the sportstech marketplace alongside init-workdir:
   knowledge-base, hybrid-search, compound-dispatch. Each ships its own plugin manifest +
   README. The bootstrap step reads them from the marketplace clone path
 - SKILL.md routing table now lists `bootstrap` as the first subcommand; "Typical fresh-machine

@@ -253,7 +253,7 @@ existing @include lines in that section (before the closing comment line or the 
 **If NO_CLAUDE and NEW:**
 Insert a comment placeholder so the repo is still tracked:
 ```
-<!-- <GROUP>/<REPO_NAME> — no CLAUDE.md (add one and re-run /init-workdir clone to activate) -->
+<!-- <GROUP>/<REPO_NAME> — no CLAUDE.md (add one and re-run /workdir clone to activate) -->
 ```
 
 **If EXISTS:** Skip (already included, no action needed).
@@ -341,7 +341,7 @@ Workspace now includes these repos:
 
 | Symptom | Fix |
 |---------|-----|
-| `gh: command not found` | Run `/init-workdir github` to set up the workspace first |
+| `gh: command not found` | Run `/workdir init github` to set up the workspace first |
 | `Authentication required` | Run `gh auth login` or `glab auth login` |
 | `Repository not found` | Check spelling; confirm you have access to the repo |
 | SSH URL fails via CLI | Use plain `git clone` fallback (Step 4) |

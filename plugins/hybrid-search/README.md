@@ -24,7 +24,7 @@ crystallize, contradiction-check, proceduralize, decay, bump-relevance.
 ## Hook scripts shipped
 
 These scripts are referenced by global hook entries in `~/.claude/settings.json` (written by
-the `init-workdir` bootstrap step):
+the `workdir` bootstrap step):
 
 | Script | Hook event | What it does |
 |---|---|---|
@@ -38,12 +38,12 @@ the `init-workdir` bootstrap step):
 
 ## Installation
 
-This skill is bundled with `init-workdir`. The bootstrap subcommand copies it to
+This skill is bundled with `workdir`. The bootstrap subcommand copies it to
 `~/.claude/skills/hybrid-search/` so the global hook paths in `~/.claude/settings.json`
 resolve correctly:
 
 ```
-/init-workdir bootstrap
+/workdir bootstrap
 ```
 
 Or install standalone:

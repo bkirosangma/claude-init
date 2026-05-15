@@ -1,11 +1,11 @@
 # Update Command
 
-Bring an existing workspace up to date with the latest init-workdir skill version. Reads the
+Bring an existing workspace up to date with the latest workdir skill version. Reads the
 prior manifest, prints the changelog diff, runs only the idempotent steps from `init.md` that
 matter for upgrades, and rewrites the manifest.
 
-**This command requires an existing workspace.** For first-time setup, use `/init-workdir
-github` or `/init-workdir gitlab`.
+**This command requires an existing workspace.** For first-time setup, use `/workdir init
+github` or `/workdir init gitlab`.
 
 ---
 
@@ -14,9 +14,15 @@ github` or `/init-workdir gitlab`.
 ```bash
 WORKDIR=$(pwd)
 WORKDIR_BASENAME=$(basename "$WORKDIR")
-CURRENT_VERSION=$(awk '/^version:/{print $2; exit}' ~/.claude/skills/init-workdir/SKILL.md)
+CURRENT_VERSION=$(awk '/^version:/{print $2; exit}' ~/.claude/skills/workdir/SKILL.md)
 
-MANIFEST="$WORKDIR/.init-workdir/state.json"
+# Auto-migrate legacy state dir (v1 .init-workdir/ → v2 .workdir/)
+if [ -d "$WORKDIR/.init-workdir" ] && [ ! -d "$WORKDIR/.workdir" ]; then
+  mv "$WORKDIR/.init-workdir" "$WORKDIR/.workdir"
+  echo "Migrated state dir:  .init-workdir/ → .workdir/ (v1 → v2 layout)"
+fi
+
+MANIFEST="$WORKDIR/.workdir/state.json"
 if [ -f "$MANIFEST" ]; then
   PRIOR_VERSION=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["skillVersion"])' "$MANIFEST" 2>/dev/null || echo "")
   PRIOR_AT=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1])).get("appliedAt",""))' "$MANIFEST" 2>/dev/null || echo "")
@@ -29,8 +35,8 @@ elif grep -q 'Multi-Repo Workspace' "$WORKDIR/CLAUDE.md" 2>/dev/null; then
   echo "Last init:        legacy (no manifest)"
   STATE="LEGACY"
 else
-  echo "ERROR: No init-workdir workspace found at $WORKDIR"
-  echo "Run /init-workdir <github|gitlab> to initialize first."
+  echo "ERROR: No workdir workspace found at $WORKDIR"
+  echo "Run /workdir init <github|gitlab> to initialize first."
   exit 1
 fi
 
@@ -74,7 +80,7 @@ if [ "$PRIOR_VERSION" != "legacy" ] && [ "$PRIOR_VERSION" != "$CURRENT_VERSION" 
     /^## / && $2 == prior { exit }
     /^## / { active=1 }
     active { print }
-  ' ~/.claude/skills/init-workdir/CHANGELOG.md
+  ' ~/.claude/skills/workdir/CHANGELOG.md
 fi
 ```
 
@@ -82,7 +88,7 @@ For `LEGACY` workspaces (CLAUDE.md present, no manifest):
 
 ```
 No prior manifest — running all idempotent steps to catch up to $CURRENT_VERSION.
-See ~/.claude/skills/init-workdir/CHANGELOG.md for the full version history.
+See ~/.claude/skills/workdir/CHANGELOG.md for the full version history.
 ```
 
 ---
@@ -98,7 +104,7 @@ On "no", abort without writing the manifest. On "yes", continue.
 
 ## Step 5 — Run Idempotent Steps from `init.md`
 
-Read `~/.claude/skills/init-workdir/commands/init.md` and execute the following steps in
+Read `~/.claude/skills/workdir/commands/init.md` and execute the following steps in
 order. They share the same `WORKDIR`, `WORKDIR_BASENAME`, `CURRENT_VERSION`, `PRIOR_VERSION`,
 and `STATE` variables already set above.
 
@@ -111,7 +117,7 @@ and `STATE` variables already set above.
 | Step 9 — Write Parent CLAUDE.md | Preserve existing `## Projects` @includes, refresh other sections | New CLAUDE.md template sections (e.g. UI/UX) land here |
 | Step 10 — Start Claude-Mem Worker | `status \|\| start` (idempotent) | Worker may need restart after upgrades |
 | Step 12 — Install UI/UX Pro Max Skill | `command -v uipro` check, then `uipro init --ai claude` | Skill version refresh |
-| Step 13 — Bootstrap MEMORY.md Seeds | Copy any seeds from `~/.claude/skills/init-workdir/memory-seeds/` not yet in the workspace memory dir; preserve existing files | New seed files added in skill releases land here on update |
+| Step 13 — Bootstrap MEMORY.md Seeds | Copy any seeds from `~/.claude/skills/workdir/memory-seeds/` not yet in the workspace memory dir; preserve existing files | New seed files added in skill releases land here on update |
 
 **Skipped on update:**
 
@@ -120,10 +126,10 @@ and `STATE` variables already set above.
 | Step 1 — Verify Prerequisites | Workspace already exists → prereqs were met previously |
 | Step 2 — Authenticate | Auth state preserved by provider CLI |
 | Step 3 — Capture Working Directory & Detect Prior Init | Done above as Step 1 of this command |
-| Step 4 — Project-Level Gitconfig | Identity rarely changes; user can re-run `/init-workdir <provider>` if it does |
+| Step 4 — Project-Level Gitconfig | Identity rarely changes; user can re-run `/workdir init <provider>` if it does |
 | Step 11 — Build Initial Knowledge Graph | Auto-rebuild hook keeps the graph fresh; skip the heavy initial build |
 
-If you need any of the skipped steps, run the full `/init-workdir <provider>` command — its
+If you need any of the skipped steps, run the full `/workdir init <provider>` command — its
 own probes will skip already-applied work, just like this one.
 
 ---
@@ -134,10 +140,10 @@ Same logic as `init.md` Step 13 — append prior run to `history`, write current
 timestamp:
 
 ```bash
-mkdir -p "$WORKDIR/.init-workdir"
+mkdir -p "$WORKDIR/.workdir"
 APPLIED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-python3 - "$WORKDIR/.init-workdir/state.json" "$CURRENT_VERSION" "$APPLIED_AT" <<'PY'
+python3 - "$WORKDIR/.workdir/state.json" "$CURRENT_VERSION" "$APPLIED_AT" <<'PY'
 import json, os, sys
 path, version, applied_at = sys.argv[1], sys.argv[2], sys.argv[3]
 state = {"skillVersion": version, "appliedAt": applied_at, "history": []}
@@ -156,7 +162,7 @@ with open(path, "w") as fh:
     json.dump(state, fh, indent=2)
 PY
 
-echo "Manifest updated: $WORKDIR/.init-workdir/state.json (version $CURRENT_VERSION)"
+echo "Manifest updated: $WORKDIR/.workdir/state.json (version $CURRENT_VERSION)"
 ```
 
 ---
@@ -167,11 +173,11 @@ echo "Manifest updated: $WORKDIR/.init-workdir/state.json (version $CURRENT_VERS
 Workspace updated: <WORKDIR>
 
   Skill version:   $PRIOR_VERSION → $CURRENT_VERSION
-  Manifest:        <WORKDIR>/.init-workdir/state.json
+  Manifest:        <WORKDIR>/.workdir/state.json
   Applied at:      $APPLIED_AT
 
 Next:
-  Re-run anytime:  /init-workdir update
-  Full re-init:    /init-workdir <github|gitlab>
-  Clone a repo:    /init-workdir clone <url>
+  Re-run anytime:  /workdir update
+  Full re-init:    /workdir init <github|gitlab>
+  Clone a repo:    /workdir clone <url>
 ```
