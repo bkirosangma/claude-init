@@ -6,6 +6,15 @@ newest-first.
 
 Format: `## <version> — <YYYY-MM-DD>` followed by a bulleted list of changes.
 
+## 2.1.2 — 2026-05-15
+- Fix init.md Step 13 — Memory seed path encoding. The previous encoding only converted `/`
+  and `_` to `-`, missing spaces (and other non-alphanumerics) that Claude Code's actual
+  project-dir encoding does convert. For a workspace like `/Users/kiro/My Projects`, seeds
+  landed in `~/.claude/projects/-Users-kiro-My Projects/memory/` (with literal space) while
+  the running session reads from `-Users-kiro-My-Projects/` (space → hyphen) — silently
+  divergent. Now uses `re.sub(r'[^A-Za-z0-9]', '-', workdir)` to match Claude Code's encoding
+  exactly. Affects any workspace whose path contains a space, dot, or other punctuation
+
 ## 2.1.1 — 2026-05-15
 - `pull`, `update`, `clone`, and `init` now walk up from `$(pwd)` to locate the workspace
   root, like `git` walks up to find `.git/`. Looks for `.workdir/` or legacy `.init-workdir/`

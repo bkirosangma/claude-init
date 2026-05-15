@@ -14,7 +14,7 @@ description: >
   "git pull workspace".
 argument-hint: <bootstrap|init|clone|update|pull> [github|gitlab|repo-url] [--group <name>]
 allowed-tools: [Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion]
-version: 2.1.1
+version: 2.1.2
 ---
 
 # Workdir

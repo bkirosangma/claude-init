@@ -651,9 +651,12 @@ SEEDS_DIR=~/.claude/skills/workdir/memory-seeds
 [ -d "$SEEDS_DIR" ] || { echo "No memory seeds shipped — skipping"; exit 0; }
 
 MEMORY_DIR=$(python3 -c "
-import os
+import os, re
 workdir = os.path.realpath('$WORKDIR')
-encoded = workdir.replace('/', '-').replace('_', '-')
+# Claude Code encodes project paths by replacing every non-alphanumeric character (slashes,
+# spaces, dots, underscores, etc.) with '-'. Must match exactly or seeds land in a sibling
+# directory that the running session never reads.
+encoded = re.sub(r'[^A-Za-z0-9]', '-', workdir)
 print(os.path.expanduser(f'~/.claude/projects/{encoded}/memory'))
 ")
 
